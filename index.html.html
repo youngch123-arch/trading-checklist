@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>매매 원칙 체크리스트</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap');
+:root{
+  --bg:#0d0f12;--surface:#161a20;--surface2:#1e232b;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#e8eaf0;--muted:#6b7280;--muted2:#9ca3af;
+  --green:#22c55e;--green-bg:rgba(34,197,94,0.1);--green-b:rgba(34,197,94,0.3);
+  --red:#ef4444;--red-bg:rgba(239,68,68,0.1);--red-b:rgba(239,68,68,0.3);
+  --amber:#f59e0b;--amber-bg:rgba(245,158,11,0.1);--amber-b:rgba(245,158,11,0.3);
+  --blue:#3b82f6;--blue-bg:rgba(59,130,246,0.1);--blue-b:rgba(59,130,246,0.3);
+  --purple:#a855f7;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;min-height:100vh;padding:20px 16px 80px;}
+.container{max-width:720px;margin:0 auto;}
+header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;gap:12px;flex-wrap:wrap;}
+.brand-label{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:3px;}
+h1{font-size:20px;font-weight:700;letter-spacing:-.02em;}
+.date-display{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);text-align:right;line-height:1.9;}
+.tabs{display:flex;gap:3px;margin-bottom:20px;background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:4px;}
+.tab{flex:1;padding:8px 0;font-size:12px;font-weight:500;border:none;background:transparent;color:var(--muted2);cursor:pointer;border-radius:9px;transition:all .2s;white-space:nowrap;}
+.tab.active{background:var(--surface2);color:var(--text);border:0.5px solid var(--border2);}
+.panel{display:none;}.panel.active{display:block;}
+
+/* CHECKLIST */
+.ticker-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:11px 15px;}
+.ticker-label{font-size:12px;color:var(--muted);white-space:nowrap;}
+.ticker-input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;}
+.ticker-input::placeholder{color:var(--muted);font-weight:400;font-size:13px;}
+.progress-wrap{margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+.progress-track{flex:1;height:3px;background:var(--surface2);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--green);border-radius:2px;transition:width .4s cubic-bezier(.4,0,.2,1);width:0%;}
+.progress-text{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted2);min-width:36px;text-align:right;}
+.cl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+@media(max-width:480px){.cl-grid{grid-template-columns:1fr;}}
+.card{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:12px 14px;cursor:pointer;transition:border-color .2s,background .2s;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:transparent;transition:background .2s;border-radius:3px 0 0 3px;}
+.card.checked{background:rgba(34,197,94,.06);border-color:var(--green-b);}.card.checked::before{background:var(--green);}
+.card.crossed{background:rgba(239,68,68,.06);border-color:var(--red-b);}.card.crossed::before{background:var(--red);}
+.card-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:4px;}
+.card-num{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;min-width:14px;}
+.card-title{font-size:13px;font-weight:700;color:var(--text);line-height:1.4;flex:1;}
+.card.checked .card-title{color:var(--green);}.card.crossed .card-title{color:var(--red);}
+.card-sub{font-size:11px;color:var(--muted);line-height:1.5;margin-left:22px;margin-bottom:8px;}
+.card.checked .card-sub{color:rgba(34,197,94,.7);}.card.crossed .card-sub{color:rgba(239,68,68,.6);}
+.btn-row{display:flex;gap:5px;margin-left:22px;}
+.ck-btn{font-size:11px;font-weight:500;padding:4px 10px;border-radius:6px;border:0.5px solid;cursor:pointer;background:transparent;font-family:'Noto Sans KR',sans-serif;transition:background .15s,color .15s;}
+.btn-ok{border-color:rgba(34,197,94,.4);color:var(--green);}.btn-ok:hover,.btn-ok.active{background:var(--green);color:#000;border-color:var(--green);}
+.btn-no{border-color:rgba(239,68,68,.4);color:var(--red);}.btn-no:hover,.btn-no.active{background:var(--red);color:#fff;border-color:var(--red);}
+.verdict-box{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:13px 16px;display:flex;align-items:center;gap:13px;margin-bottom:10px;transition:border-color .3s,background .3s;}
+.verdict-box.pass{background:rgba(34,197,94,.07);border-color:var(--green-b);}
+.verdict-box.fail{background:rgba(239,68,68,.07);border-color:var(--red-b);}
+.verdict-icon{font-size:20px;min-width:26px;text-align:center;}
+.verdict-main{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.verdict-box.pass .verdict-main{color:var(--green);}.verdict-box.fail .verdict-main{color:var(--red);}
+.verdict-sub{font-size:11px;color:var(--muted2);}
+.row-btns{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.ghost-btn{font-size:12px;padding:6px 13px;border-radius:8px;border:0.5px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:background .15s;}
+.ghost-btn:hover{background:var(--surface2);}
+.chk-log{margin-top:12px;background:var(--surface);border:0.5px solid var(--border);border-radius:12px;overflow:hidden;display:none;}
+.chk-log.open{display:block;}
+.log-hdr{padding:10px 15px;border-bottom:0.5px solid var(--border);font-size:12px;font-weight:700;color:var(--muted2);display:flex;justify-content:space-between;align-items:center;}
+.log-clr{font-size:11px;color:var(--muted);cursor:pointer;background:none;border:none;font-family:'Noto Sans KR',sans-serif;}
+.log-clr:hover{color:var(--red);}
+.chk-log-list{padding:6px 0;max-height:180px;overflow-y:auto;}
+.chk-log-item{padding:7px 15px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid var(--border);font-size:12px;}
+.chk-log-item:last-child{border-bottom:none;}
+.ldot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.ldot.pass{background:var(--green);}.ldot.fail{background:var(--red);}
+.empty-msg{padding:18px;text-align:center;color:var(--muted);font-size:12px;}
+
+/* SHARED CALC */
+.sec{margin-bottom:16px;}
+.sec-title{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;font-family:'IBM Plex Mono',monospace;}
+.inp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+@media(max-width:420px){.inp-grid{grid-template-columns:1fr;}}
+.field{background:var(--surface);border:0.5px solid var(--border2);border-radius:10px;padding:10px 13px;}
+.field label{display:block;font-size:10px;color:var(--muted);margin-bottom:5px;font-family:'IBM Plex Mono',monospace;}
+.field input,.field select{width:100%;background:transparent;border:none;outline:none;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;}
+.field select option{background:var(--surface2);}
+.field input::placeholder{color:var(--muted);font-size:13px;font-weight:400;}
+.field .hint{font-size:10px;color:var(--muted);margin-top:3px;}
+.field.hi{border-color:var(--blue-b);background:rgba(59,130,246,0.06);}
+.field.hi label{color:var(--blue);}
+.rcards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+@media(max-width:460px){.rcards{grid-template-columns:1fr 1fr;}}
+.rc{background:var(--surface2);border-radius:10px;padding:11px 12px;}
+.rc .rl{font-size:10px;color:var(--muted);margin-bottom:4px;font-family:'IBM Plex Mono',monospace;}
+.rc .rv{font-size:16px;font-weight:700;color:var(--text);font-family:'IBM Plex Mono',monospace;}
+.rc .rs{font-size:10px;color:var(--muted);margin-top:2px;}
+.rc.g .rv{color:var(--green);}
+.rc.r .rv{color:var(--red);}
+.rc.a .rv{color:var(--amber);}
+.rc.b .rv{color:var(--blue);}
+.rc.p .rv{color:var(--purple);}
+.divider{height:0.5px;background:var(--border);margin:16px 0;}
+.qbox{background:var(--surface);border-left:2px solid var(--amber);border-radius:0 10px 10px 0;padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--muted2);line-height:1.7;}
+.qbox strong{color:var(--amber);font-weight:500;}
+
+/* EV BAR */
+.ev-wrap{background:var(--surface);border:0.5px solid var(--border2);border-radius:10px;padding:12px 14px;margin-bottom:12px;}
+.ev-bar{height:8px;background:var(--surface2);border-radius:4px;overflow:visible;position:relative;margin-bottom:5px;}
+.ev-fill{height:100%;border-radius:4px;transition:width .4s,background .4s;}
+.ev-zero{position:absolute;top:-3px;bottom:-3px;width:1px;background:var(--muted);left:50%;}
+.ev-nums{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);}
+
+/* POSITION TABLE */
+.pos-wrap{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;overflow:hidden;}
+.pos-wrap table{width:100%;border-collapse:collapse;}
+.pos-wrap th{padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:var(--muted);font-family:'IBM Plex Mono',monospace;border-bottom:0.5px solid var(--border2);white-space:nowrap;}
+.pos-wrap td{padding:7px 10px;border-bottom:0.5px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted2);}
+.pos-wrap tr:last-child td{border-bottom:none;}
+.pos-wrap .grp td{background:var(--surface2);color:var(--amber);font-weight:700;font-size:11px;padding:6px 10px;}
+.pos-wrap .tv{color:var(--blue);font-weight:600;}
+.pos-wrap .lv{color:var(--red);}
+.pos-wrap .pv{color:var(--green);font-weight:600;}
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600;font-family:'IBM Plex Mono',monospace;}
+.b-up{background:var(--green-bg);color:var(--green);border:0.5px solid var(--green-b);}
+.b-mid{background:var(--amber-bg);color:var(--amber);border:0.5px solid var(--amber-b);}
+.b-dn{background:var(--red-bg);color:var(--red);border:0.5px solid var(--red-b);}
+
+/* JOURNAL */
+.j-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
+@media(max-width:500px){.j-summary{grid-template-columns:1fr 1fr;}}
+.jsc{background:var(--surface);border:0.5px solid var(--border2);border-radius:10px;padding:11px 13px;}
+.jsc .sl{font-size:10px;color:var(--muted);margin-bottom:4px;font-family:'IBM Plex Mono',monospace;}
+.jsc .sv{font-size:17px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--text);}
+.jsc .ss{font-size:10px;color:var(--muted);margin-top:2px;}
+.jsc.g .sv{color:var(--green);}
+.jsc.r .sv{color:var(--red);}
+.jsc.a .sv{color:var(--amber);}
+.jsc.b .sv{color:var(--blue);}
+.add-form{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:14px 16px;margin-bottom:14px;}
+.form-title{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;font-family:'IBM Plex Mono',monospace;}
+.frow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;}
+@media(max-width:500px){.frow{grid-template-columns:1fr 1fr;}}
+.ff{display:flex;flex-direction:column;gap:4px;}
+.ff label{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
+.ff input,.ff select,.ff textarea{background:var(--surface2);border:0.5px solid var(--border2);border-radius:8px;padding:7px 10px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;outline:none;width:100%;}
+.ff select option{background:var(--surface2);}
+.ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--blue-b);}
+.ff input::placeholder{color:var(--muted);font-weight:400;}
+.ff textarea{resize:none;height:58px;font-size:12px;}
+.form-actions{display:flex;gap:8px;margin-top:10px;}
+.btn-p{padding:8px 18px;border-radius:8px;border:none;background:var(--blue);color:#fff;font-size:13px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:opacity .15s;}
+.btn-p:hover{opacity:.85;}
+.btn-s{padding:8px 14px;border-radius:8px;border:0.5px solid var(--border2);background:transparent;color:var(--muted2);font-size:13px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:background .15s;}
+.btn-s:hover{background:var(--surface2);}
+.f-row{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.f-btn{padding:5px 12px;border-radius:20px;border:0.5px solid var(--border2);background:transparent;color:var(--muted2);font-size:11px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;}
+.f-btn.active{background:var(--surface2);color:var(--text);}
+.jt-wrap{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;overflow:hidden;overflow-x:auto;}
+.jt{width:100%;border-collapse:collapse;min-width:600px;}
+.jt th{padding:9px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--muted);font-family:'IBM Plex Mono',monospace;border-bottom:0.5px solid var(--border2);white-space:nowrap;}
+.jt td{padding:9px 12px;border-bottom:0.5px solid var(--border);font-size:12px;color:var(--muted2);vertical-align:middle;}
+.jt tr:last-child td{border-bottom:none;}
+.jt tr:hover td{background:var(--surface2);}
+.jttype{font-size:11px;padding:2px 7px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-weight:600;}
+.jttype.sw{background:var(--blue-bg);color:var(--blue);border:0.5px solid var(--blue-b);}
+.jttype.sh{background:var(--amber-bg);color:var(--amber);border:0.5px solid var(--amber-b);}
+.jt-del{background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;padding:2px 6px;border-radius:4px;}
+.jt-del:hover{color:var(--red);}
+.j-empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:13px;}
+.j-empty .ei{font-size:32px;margin-bottom:10px;}
+
+/* PYRAMIDING */
+.py-label{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:var(--muted);background:var(--surface2);border-radius:6px;padding:9px 0;text-align:center;}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <div>
+    <div class="brand-label">Trading Checklist · 깡토 원칙</div>
+    <h1>매매 원칙 체크리스트</h1>
+  </div>
+  <div class="date-display" id="dateDisplay"></div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('checklist',this)">① 체크리스트</button>
+  <button class="tab" onclick="switchTab('rpos',this)">② R베팅·포지션</button>
+  <button class="tab" onclick="switchTab('pyramiding',this)">③ 피라미딩</button>
+  <button class="tab" onclick="switchTab('journal',this)">④ 매매일지</button>
+  <button class="tab" onclick="switchTab('dart',this)">⑤ DART</button>
+</div>
+
+<!-- ══ 탭1: 체크리스트 ══ -->
+<div class="panel active" id="panel-checklist">
+  <div class="ticker-row">
+    <span class="ticker-label">종목명</span>
+    <input class="ticker-input" id="ticker" type="text" placeholder="예) 삼성전자, 005930" autocomplete="off"/>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-text" id="progressText">0 / 8</span>
+  </div>
+  <div class="cl-grid" id="cardGrid"></div>
+  <div class="verdict-box" id="verdictBox">
+    <div class="verdict-icon" id="verdictIcon">📋</div>
+    <div>
+      <div class="verdict-main" id="verdictMain">항목을 체크해주세요</div>
+      <div class="verdict-sub" id="verdictSub">8개 중 하나라도 ❌이면 오늘은 쉬는 날</div>
+    </div>
+  </div>
+  <div class="row-btns">
+    <div style="display:flex;gap:7px;">
+      <button class="ghost-btn" onclick="resetAll()">초기화</button>
+      <button class="ghost-btn" id="saveCheckBtn" style="display:none;border-color:var(--blue-b);color:var(--blue);" onclick="saveCheckEntry()">기록 저장</button>
+    </div>
+    <button class="ghost-btn" onclick="toggleCheckLog()">📁 체크 기록</button>
+  </div>
+  <div class="chk-log" id="checkLogSection">
+    <div class="log-hdr"><span>체크 기록</span><button class="log-clr" onclick="clearCheckLog()">전체 삭제</button></div>
+    <div class="chk-log-list" id="checkLogList"></div>
+  </div>
+</div>
+
+<!-- ══ 탭2: R베팅·포지션 (통합) ══ -->
+<div class="panel" id="panel-rpos">
+
+  <div class="qbox"><strong>손실은 짧게, 수익은 길게</strong> — 보유 물량 20~30%만 분할 익절하고, 나머지는 데드크로스 발생 시 전량 매도. 꼭지를 확인하고 팔아라.</div>
+
+  <!-- 입력 -->
+  <div class="sec">
+    <div class="sec-title">종목당 투자 설정</div>
+    <div class="inp-grid">
+      <div class="field hi">
+        <label>종목당 투자금 (만원)</label>
+        <input type="number" id="rp_invest" placeholder="1000" oninput="calcRP()"/>
+        <div class="hint">한 종목에 넣을 금액</div>
+      </div>
+      <div class="field">
+        <label>손절률 (%)</label>
+        <input type="number" id="rp_stop" placeholder="8" step="0.5" oninput="calcRP()"/>
+        <div class="hint">눌림목 스윙 기준: 8%</div>
+      </div>
+      <div class="field">
+        <label>손익비 (배)</label>
+        <input type="number" id="rp_rr" placeholder="3" step="0.5" oninput="calcRP()"/>
+        <div class="hint">눌림목 스윙 기준: 3배</div>
+      </div>
+      <div class="field">
+        <label>유닛 수</label>
+        <input type="number" id="rp_units" placeholder="3" min="1" max="5" oninput="calcRP()"/>
+        <div class="hint">분할 매수 횟수</div>
+      </div>
+    </div>
+    <div class="field" style="margin-bottom:12px;">
+      <label>총 계좌 시드 (만원) · 선택 — R% 역산용</label>
+      <input type="number" id="rp_seed" placeholder="입력 시 R% 자동 계산" oninput="calcRP()"/>
+    </div>
+  </div>
+
+  <!-- R베팅 결과 카드 -->
+  <div class="rcards" id="rp_cards" style="display:none;">
+    <div class="rc r"><div class="rl">최대 손실</div><div class="rv" id="rp_maxloss">—</div><div class="rs">투자금 × 손절%</div></div>
+    <div class="rc g"><div class="rl">목표 수익금</div><div class="rv" id="rp_profit">—</div><div class="rs">최대손실 × 손익비</div></div>
+    <div class="rc a"><div class="rl">손절가 −</div><div class="rv" id="rp_stoppct">—</div><div class="rs">진입가 대비</div></div>
+    <div class="rc g"><div class="rl">목표 익절 +</div><div class="rv" id="rp_tgtpct">—</div><div class="rs">손절률 × 손익비</div></div>
+    <div class="rc p"><div class="rl">R% (역산)</div><div class="rv" id="rp_rrate">—</div><div class="rs">최대손실 ÷ 시드</div></div>
+    <div class="rc b"><div class="rl">매매 유형</div><div class="rv" id="rp_type">—</div><div class="rs">손익비 기준</div></div>
+  </div>
+
+  <!-- 기대값 -->
+  <div class="ev-wrap" id="rp_ev" style="display:none;">
+    <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">기대값 = 승률 × 손익비 − (1 − 승률)</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <span style="font-size:11px;color:var(--muted);min-width:28px;">승률</span>
+      <input type="range" id="rp_wr" min="20" max="80" value="40" step="5" oninput="calcEV()" style="flex:1;"/>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;min-width:34px;text-align:right;color:var(--text);" id="rp_wr_val">40%</span>
+    </div>
+    <div class="ev-bar"><div class="ev-fill" id="ev_fill"></div><div class="ev-zero"></div></div>
+    <div class="ev-nums"><span>−1.0R</span><span>0</span><span>+1.0R</span></div>
+    <div style="font-size:13px;font-weight:700;margin-top:8px;" id="ev_result"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 포지션 테이블 -->
+  <div class="sec">
+    <div class="sec-title">시장 상황별 포지션 & 손익</div>
+    <div class="pos-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>유닛 전략</th>
+            <th>시장</th>
+            <th>투자금</th>
+            <th>손절 손실</th>
+            <th>목표 수익금</th>
+            <th>목표 수익률</th>
+          </tr>
+        </thead>
+        <tbody id="posBody">
+          <tr><td colspan="6" style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">위 값을 입력하면 자동 계산됩니다</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 깡토 기준 카드 -->
+  <div class="sec-title">깡토 기준 — 이상적인 조합</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+    <div style="background:var(--surface2);border-radius:10px;padding:12px 14px;border-left:2px solid var(--green);">
+      <div style="font-size:10px;color:var(--muted);margin-bottom:5px;font-family:'IBM Plex Mono',monospace;">베스트</div>
+      <div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:4px;">손익비 2.0 + 승률 40~50%</div>
+      <div style="font-size:11px;color:var(--muted2);line-height:1.7;">0.4×2.0−0.6 = <span style="color:var(--green);font-family:'IBM Plex Mono',monospace;">+0.2R</span></div>
+    </div>
+    <div style="background:var(--surface2);border-radius:10px;padding:12px 14px;border-left:2px solid var(--amber);">
+      <div style="font-size:10px;color:var(--muted);margin-bottom:5px;font-family:'IBM Plex Mono',monospace;">현실적 목표 (단기)</div>
+      <div style="font-size:13px;font-weight:700;color:var(--amber);margin-bottom:4px;">손익비 1.5 + 승률 50%</div>
+      <div style="font-size:11px;color:var(--muted2);line-height:1.7;">0.5×1.5−0.5 = <span style="color:var(--amber);font-family:'IBM Plex Mono',monospace;">+0.25R</span></div>
+    </div>
+    <div style="background:var(--surface2);border-radius:10px;padding:12px 14px;border-left:2px solid var(--blue);">
+      <div style="font-size:10px;color:var(--muted);margin-bottom:5px;font-family:'IBM Plex Mono',monospace;">깡토 공식</div>
+      <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:4px;">승률 30% + 손익비 4.0</div>
+      <div style="font-size:11px;color:var(--muted2);line-height:1.7;">0.3×4.0−0.7 = <span style="color:var(--blue);font-family:'IBM Plex Mono',monospace;">+0.5R</span></div>
+    </div>
+    <div style="background:var(--surface2);border-radius:10px;padding:12px 14px;border-left:2px solid var(--red);">
+      <div style="font-size:10px;color:var(--muted);margin-bottom:5px;font-family:'IBM Plex Mono',monospace;">위험 기준선</div>
+      <div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:4px;">손익비 1.0 미만 = 매매 금지</div>
+      <div style="font-size:11px;color:var(--muted2);line-height:1.7;">기대값 0 이하 → 장기 손실</div>
+    </div>
+  </div>
+
+  <div style="background:var(--surface);border:0.5px solid var(--blue-b);border-radius:12px;padding:14px 16px;">
+    <div style="font-size:11px;font-weight:700;color:var(--blue);font-family:'IBM Plex Mono',monospace;margin-bottom:10px;">📌 내 매매 기준 — 눌림목 스윙</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">
+      <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center;">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">손절</div>
+        <div style="font-size:18px;font-weight:700;color:var(--red);font-family:'IBM Plex Mono',monospace;">−8%</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center;">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">최소 익절</div>
+        <div style="font-size:18px;font-weight:700;color:var(--green);font-family:'IBM Plex Mono',monospace;">+24%</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center;">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">손익비</div>
+        <div style="font-size:18px;font-weight:700;color:var(--amber);font-family:'IBM Plex Mono',monospace;">3 : 1</div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--muted2);line-height:1.8;border-top:0.5px solid var(--border);padding-top:10px;">
+      승률 40% → 기대값 0.4×3−0.6 = <span style="color:var(--green);font-family:'IBM Plex Mono',monospace;font-weight:600;">+0.6R</span>&nbsp;·&nbsp;
+      승률 33% → 기대값 0.33×3−0.67 = <span style="color:var(--amber);font-family:'IBM Plex Mono',monospace;font-weight:600;">+0.32R</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 탭3: 피라미딩 ══ -->
+<div class="panel" id="panel-pyramiding">
+  <div class="qbox"><strong>피라미딩 (Pyramiding)</strong> — 상승을 확인한 후 베팅을 늘린다. 물타기와 반대 방향. 수익 중 추가 진입으로 수익은 극대화, 리스크는 통제.</div>
+  <div class="sec">
+    <div class="sec-title">기본 설정</div>
+    <div class="inp-grid">
+      <div class="field hi">
+        <label>1차 진입가 (원)</label>
+        <input type="number" id="py_entry1" placeholder="50000" oninput="calcPyPrices()"/>
+        <div class="hint">첫 매수 가격</div>
+      </div>
+      <div class="field">
+        <label>총 예산 (만원)</label>
+        <input type="number" id="py_budget" placeholder="1000" oninput="calcPyramid()"/>
+        <div class="hint">최대 투자 금액</div>
+      </div>
+    </div>
+
+    <!-- % 입력 → 가격 자동 계산 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+      <div class="field" style="border-color:var(--red-b);background:rgba(239,68,68,0.04);">
+        <label style="color:var(--red);">손절률 (%)</label>
+        <input type="number" id="py_stop_pct" placeholder="8" step="0.5" oninput="calcPyPrices()"/>
+        <div class="hint" style="color:var(--muted);">진입가 대비 하락폭</div>
+      </div>
+      <div class="field" style="border-color:var(--green-b);background:rgba(34,197,94,0.04);">
+        <label style="color:var(--green);">목표 수익률 (%)</label>
+        <input type="number" id="py_target_pct" placeholder="24" step="0.5" oninput="calcPyPrices()"/>
+        <div class="hint" style="color:var(--muted);">진입가 대비 목표 상승폭</div>
+      </div>
+    </div>
+
+    <!-- 자동 계산된 가격 표시 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;">
+      <div style="background:rgba(239,68,68,0.06);border:0.5px solid var(--red-b);border-radius:10px;padding:10px 13px;">
+        <div style="font-size:10px;color:var(--red);font-family:'IBM Plex Mono',monospace;margin-bottom:4px;">손절가 (자동계산)</div>
+        <div style="font-size:16px;font-weight:700;color:var(--red);font-family:'IBM Plex Mono',monospace;" id="py_stop_display">—</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;">진입가 × (1 − 손절률%)</div>
+        <input type="hidden" id="py_stop"/>
+      </div>
+      <div style="background:rgba(34,197,94,0.06);border:0.5px solid var(--green-b);border-radius:10px;padding:10px 13px;">
+        <div style="font-size:10px;color:var(--green);font-family:'IBM Plex Mono',monospace;margin-bottom:4px;">목표가 (자동계산)</div>
+        <div style="font-size:16px;font-weight:700;color:var(--green);font-family:'IBM Plex Mono',monospace;" id="py_target_display">—</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;">진입가 × (1 + 목표%)</div>
+        <input type="hidden" id="py_target"/>
+      </div>
+    </div>
+  </div>
+  <div class="sec">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div class="sec-title" style="margin-bottom:0;">분할 진입 설정</div>
+      <div style="display:flex;gap:6px;">
+        <button class="ghost-btn" style="font-size:11px;padding:4px 10px;" onclick="addTranche()">+ 추가</button>
+        <button class="ghost-btn" style="font-size:11px;padding:4px 10px;" onclick="removeTranche()">− 제거</button>
+      </div>
+    </div>
+    <div id="trancheInputs" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>
+  </div>
+  <div id="py_result_wrap" style="display:none;">
+    <div class="divider"></div>
+    <div class="sec-title">계산 결과</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;">
+      <div class="rc b"><div class="rl">평균 매수단가</div><div class="rv" id="py_avgprice">—</div><div class="rs">원</div></div>
+      <div class="rc a"><div class="rl">총 투자금액</div><div class="rv" id="py_totalinvest">—</div><div class="rs">만원</div></div>
+      <div class="rc r"><div class="rl">총 최대 손실</div><div class="rv" id="py_totalloss">—</div><div class="rs">손절 시</div></div>
+      <div class="rc g"><div class="rl">목표 수익금</div><div class="rv" id="py_targetprofit">—</div><div class="rs">목표가 도달 시</div></div>
+      <div class="rc p"><div class="rl">손익비</div><div class="rv" id="py_rr">—</div><div class="rs">수익 ÷ 손실</div></div>
+      <div class="rc a"><div class="rl">손절까지 여유</div><div class="rv" id="py_stopdist">—</div><div class="rs">1차 진입가 기준</div></div>
+    </div>
+    <div style="background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;overflow:hidden;margin-bottom:10px;">
+      <table style="width:100%;border-collapse:collapse;">
+        <thead><tr>
+          <th style="padding:8px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--muted);font-family:'IBM Plex Mono',monospace;border-bottom:0.5px solid var(--border2);">차수</th>
+          <th style="padding:8px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--muted);font-family:'IBM Plex Mono',monospace;border-bottom:0.5px solid var(--border2);">진입가</th>
+          <th style="padding:8px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--muted);font-family:'IBM Plex Mono',monospace;border-bottom:0.5px solid var(--border2);">투자금</th>
+          <th style="padding:8px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--muted);font-family:'IBM Plex Mono',monospace;border-bottom:0.5px solid var(--border2);">비중</th>
+          <th style="padding:8px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--muted);font-family:'IBM Plex Mono',monospace;border-bottom:0.5px solid var(--border2);">손절 리스크</th>
+          <th style="padding:8px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--muted);font-family:'IBM Plex Mono',monospace;border-bottom:0.5px solid var(--border2);">목표 수익</th>
+        </tr></thead>
+        <tbody id="py_tranche_detail"></tbody>
+      </table>
+    </div>
+    <div style="background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:14px 16px;">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">손익 시뮬레이터 — 현재가 기준</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <span style="font-size:11px;color:var(--muted);min-width:40px;">현재가</span>
+        <input type="number" id="py_current" placeholder="현재가 입력" oninput="calcSimulator()" style="flex:1;background:var(--surface2);border:0.5px solid var(--border2);border-radius:8px;padding:7px 12px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;outline:none;"/>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted2);min-width:50px;text-align:right;" id="py_sim_pct">—</span>
+      </div>
+      <div style="position:relative;height:6px;background:var(--surface2);border-radius:3px;margin-bottom:8px;">
+        <div id="py_sim_bar" style="height:100%;border-radius:3px;transition:width .3s;width:0%;background:var(--muted);"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:10px;">
+        <span id="py_bar_stop_label">손절</span><span id="py_bar_target_label">목표</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="background:var(--surface2);border-radius:8px;padding:10px 12px;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">평가손익</div>
+          <div style="font-size:17px;font-weight:700;font-family:'IBM Plex Mono',monospace;" id="py_sim_pnl">—</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:10px 12px;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">수익률 (평균단가 기준)</div>
+          <div style="font-size:17px;font-weight:700;font-family:'IBM Plex Mono',monospace;" id="py_sim_rate">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 탭4: 매매일지 ══ -->
+<div class="panel" id="panel-journal">
+  <div class="j-summary">
+    <div class="jsc b"><div class="sl">총 매매</div><div class="sv" id="j_total">0</div><div class="ss">건</div></div>
+    <div class="jsc g"><div class="sl">수익 합계</div><div class="sv" id="j_profit">0</div><div class="ss">만원</div></div>
+    <div class="jsc r"><div class="sl">손실 합계</div><div class="sv" id="j_loss">0</div><div class="ss">만원</div></div>
+    <div class="jsc a"><div class="sl">승률</div><div class="sv" id="j_winrate">—</div><div class="ss">수익 / 전체</div></div>
+  </div>
+  <div class="add-form">
+    <div class="form-title">+ 매매 기록 추가</div>
+    <div class="frow">
+      <div class="ff"><label>날짜</label><input type="date" id="j_date"/></div>
+      <div class="ff"><label>종목명</label><input type="text" id="j_ticker" placeholder="삼성전자"/></div>
+      <div class="ff"><label>매매 유형</label><select id="j_type"><option value="swing">스윙</option><option value="short">단기</option></select></div>
+    </div>
+    <div class="frow">
+      <div class="ff"><label>투자금액 (만원)</label><input type="number" id="j_invest" placeholder="1000"/></div>
+      <div class="ff"><label>손절가 (%)</label><input type="number" id="j_stoploss" placeholder="-8" step="0.5"/></div>
+      <div class="ff"><label>목표 익절 (%)</label><input type="number" id="j_target" placeholder="24" step="0.5"/></div>
+    </div>
+    <div class="frow">
+      <div class="ff"><label>실제 수익률 (%)</label><input type="number" id="j_result" placeholder="예) 12.5 또는 -5" step="0.1"/></div>
+      <div class="ff"><label>실제 손익 (만원) · 자동계산</label><input type="number" id="j_pnl" placeholder="—" readonly style="color:var(--amber);"/></div>
+      <div class="ff"><label>R 설정 (%)</label><input type="number" id="j_rrate" placeholder="1" step="0.25"/></div>
+    </div>
+    <div class="frow" style="grid-template-columns:1fr;">
+      <div class="ff"><label>메모</label><textarea id="j_memo" placeholder="진입 이유, 반성, 특이사항 등..."></textarea></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-p" onclick="addJournalEntry()">저장</button>
+      <button class="btn-s" onclick="clearJournalForm()">초기화</button>
+    </div>
+  </div>
+  <div class="f-row">
+    <button class="f-btn active" onclick="setFilter('all',this)">전체</button>
+    <button class="f-btn" onclick="setFilter('swing',this)">스윙</button>
+    <button class="f-btn" onclick="setFilter('short',this)">단기</button>
+    <button class="f-btn" onclick="setFilter('win',this)">수익</button>
+    <button class="f-btn" onclick="setFilter('lose',this)">손실</button>
+    <div style="flex:1;"></div>
+    <button class="ghost-btn" style="font-size:11px;padding:4px 11px;border-color:var(--green-b);color:var(--green);" onclick="importData()">📂 불러오기</button>
+    <button class="ghost-btn" style="font-size:11px;padding:4px 11px;border-color:var(--blue-b);color:var(--blue);" onclick="exportData()">💾 저장하기</button>
+  </div>
+  <div style="background:rgba(245,158,11,0.07);border:0.5px solid var(--amber-b);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:11px;color:var(--muted2);line-height:1.7;">
+    ⚠️ 구글 드라이브나 브라우저 환경에 따라 자동 저장이 안 될 수 있어요.<br>
+    매매 기록 후 <strong style="color:var(--amber);">💾 저장하기</strong>로 JSON 파일을 내보내고, 다음에 <strong style="color:var(--green);">📂 불러오기</strong>로 이어서 쓰세요.
+  </div>
+  <input type="file" id="importFileInput" accept=".json" style="display:none;" onchange="handleImport(this)"/>
+  <div class="jt-wrap">
+    <table class="jt">
+      <thead><tr><th>날짜</th><th>종목</th><th>유형</th><th>투자금</th><th>손절/목표</th><th>실제결과</th><th>손익</th><th>메모</th><th></th></tr></thead>
+      <tbody id="journalTableBody">
+        <tr><td colspan="9"><div class="j-empty"><div class="ei">📒</div>아직 매매 기록이 없습니다</div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ 탭5: DART 공시 ══ -->
+<div class="panel" id="panel-dart">
+
+  <!-- API 키 설정 -->
+  <div style="background:var(--surface);border:0.5px solid var(--amber-b);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
+    <div style="font-size:10px;font-weight:700;color:var(--amber);font-family:'IBM Plex Mono',monospace;letter-spacing:.1em;margin-bottom:10px;">DART API 키 설정</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <input type="password" id="dart_apikey" placeholder="발급받은 API 키 입력" value="cdca99ebee7d20b401e8b91fd063be4d30b2e6a6" style="flex:1;background:var(--surface2);border:0.5px solid var(--border2);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:13px;outline:none;"/>
+      <button onclick="saveDartKey()" style="padding:8px 14px;border-radius:8px;border:none;background:var(--amber);color:#000;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;">저장</button>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.7;">
+      API 키가 없으면 → <a href="https://opendart.fss.or.kr" target="_blank" style="color:var(--blue);">opendart.fss.or.kr</a> 에서 무료 발급 (회원가입 후 즉시)
+    </div>
+    <div id="dart_key_status" style="font-size:11px;margin-top:6px;color:var(--green);">✅ API 키가 저장돼 있어요. 바로 종목을 검색해보세요.</div>
+  </div>
+
+  <!-- 종목 검색 -->
+  <div style="display:flex;gap:8px;margin-bottom:14px;">
+    <input type="text" id="dart_query" placeholder="종목명 검색  예) 삼성전자" style="flex:1;background:var(--surface);border:0.5px solid var(--border2);border-radius:10px;padding:11px 14px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;outline:none;" onkeydown="if(event.key==='Enter')searchDart()"/>
+    <button onclick="searchDart()" style="padding:11px 18px;border-radius:10px;border:none;background:var(--blue);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">검색</button>
+  </div>
+
+  <!-- 공시 유형 필터 -->
+  <div class="f-row" style="margin-bottom:12px;">
+    <button class="f-btn active" onclick="setDartFilter('',this)">전체</button>
+    <button class="f-btn" onclick="setDartFilter('A',this)">정기공시</button>
+    <button class="f-btn" onclick="setDartFilter('B',this)">주요사항</button>
+    <button class="f-btn" onclick="setDartFilter('C',this)">발행공시</button>
+    <button class="f-btn" onclick="setDartFilter('D',this)">지분공시</button>
+    <button class="f-btn" onclick="setDartFilter('F',this)">외부감사</button>
+  </div>
+
+  <!-- 결과 -->
+  <div id="dart_result">
+    <div class="j-empty" style="padding:40px 20px;text-align:center;color:var(--muted);font-size:13px;">
+      <div style="font-size:32px;margin-bottom:10px;">📋</div>
+      종목명을 검색하면 최신 공시 목록이 표시됩니다
+    </div>
+  </div>
+
+</div>
+
+</div><!-- /container -->
+<script>
+/* ─ 유틸 ─ */
+function fmtA(n){
+  const v=Math.round(n*10)/10;
+  if(Math.abs(v)>=10000)return(v/10000).toFixed(1)+'억';
+  if(Math.abs(v)>=1000)return v.toLocaleString('ko-KR')+'만';
+  return v.toFixed(1)+'만';
+}
+function fmtP(n){return Math.round(n).toLocaleString('ko-KR')+'원';}
+
+/* ─ 날짜 ─ */
+function setDate(){
+  const d=new Date();
+  document.getElementById('dateDisplay').innerHTML=
+    d.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'short'})+'<br>'+
+    d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+}
+setDate();setInterval(setDate,30000);
+document.getElementById('j_date').value=new Date().toISOString().split('T')[0];
+
+/* ─ 탭 ─ */
+function switchTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='journal')renderJournal();
+}
+
+/* ─ 체크리스트 ─ */
+const criteria=[
+  {num:'①',title:'20일 신고가 종목인가?',sub:'키움 조건검색 → 20일 신고가 필터'},
+  {num:'②',title:'거래대금 2,000억 이상인가?',sub:'당일 거래대금 2,000억 이상 / 미달 시 진입 금지'},
+  {num:'③',title:'20일선 or 60일선 눌림목인가?',sub:'이평선에 닿거나 1~3% 이내 / 50일선도 허용'},
+  {num:'④',title:'기관 or 외인 수급이 살아있는가?',sub:'키움 수급창 → 기관/외인 매수 확인 / 개인 주도면 패스'},
+  {num:'⑤',title:'이유 없는 급락은 아닌가?',sub:'하락 원인 뉴스 확인 필수 / 악재 하락 시 진입 금지'},
+  {num:'⑥',title:'RSI 70 미만인가?',sub:'RSI 70 이상이면 과열 → 패스 / 60 이하면 베스트'},
+  {num:'⑦',title:'이번 달 매매 횟수 3회 미만인가?',sub:'월 누적 3회 초과 시 자동 패스 / 4번째는 무조건 패스'},
+  {num:'⑧',title:'손절가 / 익절가 미리 정했는가?',sub:'진입 전 시나리오 작성 완료 / 안 정하면 진입 금지'},
+];
+const state=new Array(8).fill(null);
+
+function render(){
+  const g=document.getElementById('cardGrid');g.innerHTML='';
+  criteria.forEach((c,i)=>{
+    const cls=state[i]===true?' checked':state[i]===false?' crossed':'';
+    const el=document.createElement('div');el.className='card'+cls;
+    el.innerHTML=`<div class="card-top"><span class="card-num">${c.num}</span><span class="card-title">${c.title}</span></div><div class="card-sub">${c.sub}</div><div class="btn-row"><button class="ck-btn btn-ok${state[i]===true?' active':''}" onclick="setState(${i},true,event)">✅ 해당</button><button class="ck-btn btn-no${state[i]===false?' active':''}" onclick="setState(${i},false,event)">❌ 미해당</button></div>`;
+    g.appendChild(el);
+  });
+  updateVerdict();
+}
+function setState(i,v,e){e.stopPropagation();state[i]=state[i]===v?null:v;render();}
+function updateVerdict(){
+  const passed=state.filter(s=>s===true).length;
+  const failed=state.filter(s=>s===false).length;
+  const total=passed+failed;
+  const ticker=document.getElementById('ticker').value||'종목';
+  document.getElementById('progressFill').style.width=(passed/8*100)+'%';
+  document.getElementById('progressText').textContent=passed+' / 8';
+  const vb=document.getElementById('verdictBox'),vi=document.getElementById('verdictIcon'),vm=document.getElementById('verdictMain'),vs=document.getElementById('verdictSub'),sb=document.getElementById('saveCheckBtn');
+  if(!total){vb.className='verdict-box';vi.textContent='📋';vm.textContent='항목을 체크해주세요';vs.textContent='8개 중 하나라도 ❌이면 오늘은 쉬는 날';sb.style.display='none';}
+  else if(failed>0){vb.className='verdict-box fail';vi.textContent='🚫';vm.textContent=ticker+' — 진입 금지';vs.textContent=failed+'개 조건 미충족. 쉬는 것도 매매다.';sb.style.display='inline-block';}
+  else if(passed===8){vb.className='verdict-box pass';vi.textContent='✅';vm.textContent=ticker+' — 진입 가능';vs.textContent='8개 조건 전부 충족. 시나리오대로 실행하세요.';sb.style.display='inline-block';}
+  else{vb.className='verdict-box';vi.textContent='🔍';vm.textContent=ticker+' — 확인 중';vs.textContent='아직 체크하지 않은 항목이 있습니다.';sb.style.display='none';}
+}
+function resetAll(){state.fill(null);document.getElementById('ticker').value='';render();}
+function getCheckLog(){try{return JSON.parse(localStorage.getItem('check_log')||'[]');}catch{return[];}}
+function saveCheckEntry(){
+  const ticker=document.getElementById('ticker').value||'종목명 미입력';
+  const passed=state.filter(s=>s===true).length;
+  const failed=state.filter(s=>s===false).length;
+  const result=failed>0?'fail':passed===8?'pass':'partial';
+  const d=new Date();
+  const dateStr=d.toLocaleDateString('ko-KR',{month:'2-digit',day:'2-digit'})+' '+d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+  const log=getCheckLog();log.unshift({ticker,passed,failed,result,date:dateStr});
+  if(log.length>100)log.pop();
+  localStorage.setItem('check_log',JSON.stringify(log));renderCheckLog();
+  const sb=document.getElementById('saveCheckBtn');sb.textContent='저장됨!';setTimeout(()=>{sb.textContent='기록 저장';},1500);
+}
+function clearCheckLog(){if(confirm('체크 기록을 전부 삭제할까요?')){localStorage.removeItem('check_log');renderCheckLog();}}
+function renderCheckLog(){
+  const list=document.getElementById('checkLogList');
+  const log=getCheckLog();
+  if(!log.length){list.innerHTML='<div class="empty-msg">저장된 기록이 없습니다.</div>';return;}
+  list.innerHTML=log.map(e=>`<div class="chk-log-item"><div class="ldot ${e.result}"></div><span style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--text);min-width:80px;">${e.ticker}</span><span style="color:var(--muted2);flex:1;">${e.result==='pass'?'진입 가능':e.result==='fail'?'진입 금지':'미완료'} (${e.passed}/8)</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);">${e.date}</span></div>`).join('');
+}
+function toggleCheckLog(){const s=document.getElementById('checkLogSection');s.classList.toggle('open');if(s.classList.contains('open'))renderCheckLog();}
+document.getElementById('ticker').addEventListener('input',updateVerdict);
+render();
+
+/* ─ R베팅·포지션 통합 계산 ─ */
+function calcRP(){
+  const invest=parseFloat(document.getElementById('rp_invest').value);
+  const stop=parseFloat(document.getElementById('rp_stop').value);
+  const rr=parseFloat(document.getElementById('rp_rr').value);
+  const units=parseInt(document.getElementById('rp_units').value)||3;
+  const seed=parseFloat(document.getElementById('rp_seed').value);
+
+  const cards=document.getElementById('rp_cards');
+  const evWrap=document.getElementById('rp_ev');
+
+  if(!invest||isNaN(invest)||!stop||isNaN(stop)||!rr||isNaN(rr)){
+    cards.style.display='none';evWrap.style.display='none';
+    document.getElementById('posBody').innerHTML='<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">위 값을 입력하면 자동 계산됩니다</td></tr>';
+    return;
+  }
+
+  const maxLoss=invest*(stop/100);       // 최대 손실 (만원)
+  const tgtProfit=maxLoss*rr;            // 목표 수익 (만원)
+  const stopPct=stop;
+  const tgtPct=stop*rr;
+  const rRate=(!isNaN(seed)&&seed>0)?(maxLoss/seed*100):null;
+  const typeStr=rr>=3?'스윙':rr>=2?'단기/스윙':'단기';
+
+  document.getElementById('rp_maxloss').textContent=fmtA(maxLoss);
+  document.getElementById('rp_profit').textContent='+'+fmtA(tgtProfit);
+  document.getElementById('rp_stoppct').textContent='−'+stopPct.toFixed(1)+'%';
+  document.getElementById('rp_tgtpct').textContent='+'+tgtPct.toFixed(1)+'%';
+  document.getElementById('rp_rrate').textContent=rRate!==null?rRate.toFixed(2)+'%':'시드 미입력';
+  document.getElementById('rp_type').textContent=typeStr;
+  cards.style.display='grid';
+
+  window._rr=rr;evWrap.style.display='block';calcEV();
+
+  /* 포지션 테이블 */
+  const unitInvest=invest/units;
+  const unitLoss=maxLoss/units;
+  const unitProfit=tgtProfit/units;
+
+  const bm={up:'<span class="badge b-up">상승장</span>',mid:'<span class="badge b-mid">횡보장</span>',dn:'<span class="badge b-dn">하락장</span>'};
+
+  // ratio: 투자 비율 (1=full, 2/3, 1/3)
+  const rows=[
+    {label:`최대 (${units}유닛) — 상승장`, market:'up',  mul:units},
+    {label:null,                           market:'mid', mul:units*2/3},
+    {label:null,                           market:'dn',  mul:units/3},
+    {label:'중간 (2유닛) — 횡보장',        market:'up',  mul:2},
+    {label:null,                           market:'mid', mul:2*2/3},
+    {label:null,                           market:'dn',  mul:2/3},
+    {label:'최소 (1유닛) — 하락장',        market:'up',  mul:1},
+    {label:null,                           market:'mid', mul:2/3},
+    {label:null,                           market:'dn',  mul:1/3},
+  ];
+
+  let html='';
+  rows.forEach(r=>{
+    if(r.label!==null) html+=`<tr class="grp"><td colspan="6">${r.label}</td></tr>`;
+    const inv=unitInvest*r.mul;
+    const loss=unitLoss*r.mul;
+    const profit=unitProfit*r.mul;
+    // 수익률 = 목표 수익금 / 투자금
+    const profitRate=inv>0?(profit/inv*100):0;
+    html+=`<tr>
+      <td></td>
+      <td>${bm[r.market]}</td>
+      <td class="tv">${fmtA(inv)}</td>
+      <td class="lv">−${fmtA(loss)}</td>
+      <td class="pv">+${fmtA(profit)}</td>
+      <td class="pv">+${profitRate.toFixed(1)}%</td>
+    </tr>`;
+  });
+  document.getElementById('posBody').innerHTML=html;
+}
+
+function calcEV(){
+  const rr=window._rr||0;
+  const wr=parseInt(document.getElementById('rp_wr').value)/100;
+  document.getElementById('rp_wr_val').textContent=Math.round(wr*100)+'%';
+  const ev=wr*rr-(1-wr);
+  const fill=document.getElementById('ev_fill');
+  const pct=Math.min(100,Math.max(0,(ev+1)/2*100));
+  fill.style.width=Math.abs(pct-50)+'%';
+  fill.style.marginLeft=ev>=0?'50%':'';fill.style.float=ev>=0?'none':'right';
+  fill.style.background=ev>=0?'var(--green)':'var(--red)';
+  const evStr=(ev>=0?'+':'')+ev.toFixed(2)+'R';
+  const verdict=ev>0.3?'우수 🟢':ev>0?'양호 🟡':ev===0?'손익분기':ev>-0.2?'위험 🔴':'매매 금지 🚫';
+  document.getElementById('ev_result').innerHTML=`기대값 <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:${ev>=0?'var(--green)':'var(--red)'}">${evStr}</span> — <span style="color:var(--muted2)">${verdict}</span>`;
+}
+
+/* ─ 피라미딩 ─ */
+let tranches=[{entry:'',amount:500},{entry:'',amount:300},{entry:'',amount:200}];
+function renderTrancheInputs(){
+  const w=document.getElementById('trancheInputs');if(!w)return;
+  const labs=['1차','2차','3차','4차','5차'];
+  const hints=[['첫 진입가 (원)','예) 50000'],['2차 진입가 — 상승 확인 후','예) 53000'],['3차 진입가 — 추가 상승 후','예) 56000'],['4차 진입가','예) 59000'],['5차 진입가','예) 62000']];
+  w.innerHTML=tranches.map((t,i)=>`
+    <div style="display:grid;grid-template-columns:32px 1fr 1fr;gap:8px;align-items:end;">
+      <div class="py-label">${labs[i]}</div>
+      <div class="field" style="margin:0;"><label>${hints[i][0]}</label><input type="number" value="${t.entry}" placeholder="${hints[i][1]}" oninput="updateTranche(${i},'entry',this.value)"/></div>
+      <div class="field" style="margin:0;"><label>투자금 (만원)</label><input type="number" value="${t.amount||''}" placeholder="만원" oninput="updateTranche(${i},'amount',this.value)"/></div>
+    </div>`).join('');
+}
+function updateTranche(i,key,val){tranches[i][key]=key==='amount'?(parseFloat(val)||0):(parseFloat(val)||'');calcPyramid();}
+function addTranche(){if(tranches.length>=5)return;tranches.push({entry:'',amount:100});renderTrancheInputs();calcPyramid();}
+function removeTranche(){if(tranches.length<=1)return;tranches.pop();renderTrancheInputs();calcPyramid();}
+
+function calcPyPrices(){
+  const e1=parseFloat(document.getElementById('py_entry1').value)||0;
+  const stopPct=parseFloat(document.getElementById('py_stop_pct').value)||0;
+  const tgtPct=parseFloat(document.getElementById('py_target_pct').value)||0;
+
+  if(e1&&stopPct){
+    const sp=Math.round(e1*(1-Math.abs(stopPct)/100));
+    document.getElementById('py_stop').value=sp;
+    document.getElementById('py_stop_display').textContent=sp.toLocaleString('ko-KR')+'원';
+  } else {
+    document.getElementById('py_stop').value='';
+    document.getElementById('py_stop_display').textContent='—';
+  }
+
+  if(e1&&tgtPct){
+    const tg=Math.round(e1*(1+tgtPct/100));
+    document.getElementById('py_target').value=tg;
+    document.getElementById('py_target_display').textContent=tg.toLocaleString('ko-KR')+'원';
+  } else {
+    document.getElementById('py_target').value='';
+    document.getElementById('py_target_display').textContent='—';
+  }
+
+  calcPyramid();
+}
+
+function calcPyramid(){
+  const e1=parseFloat(document.getElementById('py_entry1').value)||0;
+  const sp=parseFloat(document.getElementById('py_stop').value)||0;
+  const tg=parseFloat(document.getElementById('py_target').value)||0;
+  if(!e1||!sp){document.getElementById('py_result_wrap').style.display='none';return;}
+  const valid=tranches.map((t,i)=>({...t,ep:i===0?e1:(parseFloat(t.entry)||0),amt:parseFloat(t.amount)||0})).filter(t=>t.ep>0&&t.amt>0);
+  if(!valid.length){document.getElementById('py_result_wrap').style.display='none';return;}
+  let ti=0,ts=0,tl=0,tp=0;
+  valid.forEach(t=>{const sh=(t.amt*10000)/t.ep;ti+=t.amt;ts+=sh;tl+=sh*(t.ep-sp);if(tg>0)tp+=sh*(tg-t.ep);});
+  const avg=(ti*10000)/ts;
+  const stopDist=((e1-sp)/e1*100);
+  const rrv=tl>0?tp/tl:0;
+  document.getElementById('py_avgprice').textContent=fmtP(avg);
+  document.getElementById('py_totalinvest').textContent=fmtA(ti);
+  document.getElementById('py_totalloss').textContent='−'+fmtA(tl/10000);
+  document.getElementById('py_targetprofit').textContent=tg>0?'+'+fmtA(tp/10000):'목표가 입력 필요';
+  document.getElementById('py_rr').textContent=rrv>0?rrv.toFixed(2)+' : 1':'—';
+  document.getElementById('py_stopdist').textContent=stopDist.toFixed(1)+'%';
+  const cols=['var(--blue)','var(--green)','var(--amber)','var(--purple)','var(--muted2)'];
+  const lbs=['1차','2차','3차','4차','5차'];
+  let html=valid.map((t,i)=>{
+    const sh=(t.amt*10000)/t.ep;
+    const loss=sh*(t.ep-sp);
+    const profit=tg>0?sh*(tg-t.ep):null;
+    const w=ti>0?(t.amt/ti*100):0;
+    const up=i>0?((t.ep-valid[i-1].ep)/valid[i-1].ep*100):null;
+    return`<tr>
+      <td style="padding:9px 12px;border-bottom:0.5px solid var(--border);"><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:13px;color:${cols[i]};">${lbs[i]}</span></td>
+      <td style="padding:9px 12px;border-bottom:0.5px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text);">${fmtP(t.ep)}${up!==null?`<br><span style="font-size:10px;color:var(--green);">+${up.toFixed(1)}%↑</span>`:''}</td>
+      <td style="padding:9px 12px;border-bottom:0.5px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--blue);">${fmtA(t.amt)}</td>
+      <td style="padding:9px 12px;border-bottom:0.5px solid var(--border);"><div style="display:flex;align-items:center;gap:5px;"><div style="height:4px;border-radius:2px;background:${cols[i]};width:${Math.round(w*0.6)}px;"></div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted2);">${w.toFixed(0)}%</span></div></td>
+      <td style="padding:9px 12px;border-bottom:0.5px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--red);">−${fmtA(loss/10000)}</td>
+      <td style="padding:9px 12px;border-bottom:0.5px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--green);">${profit!==null?'+'+fmtA(profit/10000):'—'}</td>
+    </tr>`;
+  }).join('');
+  html+=`<tr style="background:var(--surface2);">
+    <td colspan="2" style="padding:8px 12px;font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;">합계</td>
+    <td style="padding:8px 12px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--blue);">${fmtA(ti)}</td>
+    <td style="padding:8px 12px;font-size:11px;color:var(--muted2);">평균 ${fmtP(avg)}</td>
+    <td style="padding:8px 12px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--red);">−${fmtA(tl/10000)}</td>
+    <td style="padding:8px 12px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--green);">${tg>0?'+'+fmtA(tp/10000):'—'}</td>
+  </tr>`;
+  document.getElementById('py_tranche_detail').innerHTML=html;
+  if(sp&&tg){
+    document.getElementById('py_bar_stop_label').textContent='손절 '+fmtP(sp);
+    document.getElementById('py_bar_target_label').textContent='목표 '+fmtP(tg);
+  }
+  window._pyData={e1,sp,tg,avg,ts,ti};
+  document.getElementById('py_result_wrap').style.display='block';
+  calcSimulator();
+}
+
+function calcSimulator(){
+  const d=window._pyData;
+  const cur=parseFloat(document.getElementById('py_current').value)||0;
+  if(!d||!cur){['py_sim_pnl','py_sim_rate','py_sim_pct'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='—';});return;}
+  const pnlM=d.ts*(cur-d.avg)/10000;
+  const rate=(cur-d.avg)/d.avg*100;
+  const pctE=d.e1>0?(cur-d.e1)/d.e1*100:0;
+  const pctEl=document.getElementById('py_sim_pct');
+  const pnlEl=document.getElementById('py_sim_pnl');
+  const rateEl=document.getElementById('py_sim_rate');
+  if(pctEl)pctEl.textContent=(pctE>=0?'+':'')+pctE.toFixed(1)+'%';
+  if(pnlEl){pnlEl.textContent=(pnlM>=0?'+':'')+fmtA(pnlM);pnlEl.style.color=pnlM>=0?'var(--green)':'var(--red)';}
+  if(rateEl){rateEl.textContent=(rate>=0?'+':'')+rate.toFixed(2)+'%';rateEl.style.color=rate>=0?'var(--green)':'var(--red)';}
+  if(d.sp&&d.tg){
+    const pos=Math.min(100,Math.max(0,(cur-d.sp)/(d.tg-d.sp)*100));
+    const bar=document.getElementById('py_sim_bar');
+    if(bar){bar.style.width=pos+'%';bar.style.background=cur>=d.avg?'var(--green)':'var(--red)';}
+  }
+}
+renderTrancheInputs();
+
+/* ─ 매매일지 ─ */
+let journalFilter='all';
+let _journal=[];  // 메모리 저장 (localStorage 대신)
+
+function getJournal(){return _journal;}
+function saveJournal(data){_journal=data;}
+
+function exportData(){
+  if(!_journal.length){alert('저장할 기록이 없어요.');return;}
+  const blob=new Blob([JSON.stringify(_journal,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const today=new Date().toISOString().split('T')[0];
+  a.href=url;a.download=`매매일지_${today}.json`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importData(){document.getElementById('importFileInput').click();}
+
+function handleImport(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!Array.isArray(data))throw new Error();
+      if(_journal.length&&!confirm(`현재 ${_journal.length}개 기록이 있어요. 불러온 데이터로 교체할까요?`))return;
+      _journal=data;renderJournal();
+      alert(`✅ ${data.length}개 기록을 불러왔어요.`);
+    }catch{alert('올바른 매매일지 파일이 아니에요.');}
+  };
+  reader.readAsText(file);
+  input.value='';
+}
+
+['j_result','j_invest'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',()=>{
+    const invest=parseFloat(document.getElementById('j_invest').value)||0;
+    const pct=parseFloat(document.getElementById('j_result').value)||0;
+    document.getElementById('j_pnl').value=(invest&&pct)?(invest*pct/100).toFixed(1):'';
+  });
+});
+
+function addJournalEntry(){
+  const date=document.getElementById('j_date').value;
+  const ticker=document.getElementById('j_ticker').value.trim();
+  if(!date||!ticker){alert('날짜와 종목명은 필수입니다.');return;}
+  const invest=parseFloat(document.getElementById('j_invest').value)||0;
+  const stoploss=parseFloat(document.getElementById('j_stoploss').value)||0;
+  const target=parseFloat(document.getElementById('j_target').value)||0;
+  const result=parseFloat(document.getElementById('j_result').value);
+  const pnl=invest&&!isNaN(result)?parseFloat((invest*result/100).toFixed(1)):null;
+  const rrate=parseFloat(document.getElementById('j_rrate').value)||null;
+  const memo=document.getElementById('j_memo').value.trim();
+  const type=document.getElementById('j_type').value;
+  const entry={id:Date.now(),date,ticker,type,invest,stoploss,target,result:isNaN(result)?null:result,pnl,rrate,memo};
+  const j=getJournal();j.unshift(entry);saveJournal(j);renderJournal();clearJournalForm();
+}
+function clearJournalForm(){
+  ['j_ticker','j_invest','j_stoploss','j_target','j_result','j_pnl','j_rrate','j_memo'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('j_date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('j_type').value='swing';
+}
+function deleteJournalEntry(id){
+  if(!confirm('이 기록을 삭제할까요?'))return;
+  saveJournal(getJournal().filter(e=>e.id!==id));renderJournal();
+}
+function setFilter(f,btn){
+  journalFilter=f;
+  document.querySelectorAll('.f-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderJournal();
+}
+function renderJournal(){
+  const all=getJournal();
+  const wins=all.filter(e=>e.pnl>0);
+  const losses=all.filter(e=>e.pnl<0);
+  document.getElementById('j_total').textContent=all.length;
+  document.getElementById('j_profit').textContent='+'+Math.round(wins.reduce((s,e)=>s+e.pnl,0)).toLocaleString('ko-KR');
+  document.getElementById('j_loss').textContent=Math.round(losses.reduce((s,e)=>s+e.pnl,0)).toLocaleString('ko-KR');
+  const denom=all.filter(e=>e.pnl!==null).length;
+  document.getElementById('j_winrate').textContent=denom?Math.round(wins.length/denom*100)+'%':'—';
+  let data=all;
+  if(journalFilter==='swing')data=all.filter(e=>e.type==='swing');
+  else if(journalFilter==='short')data=all.filter(e=>e.type==='short');
+  else if(journalFilter==='win')data=all.filter(e=>e.pnl>0);
+  else if(journalFilter==='lose')data=all.filter(e=>e.pnl<0);
+  const tbody=document.getElementById('journalTableBody');
+  if(!data.length){tbody.innerHTML='<tr><td colspan="9"><div class="j-empty"><div class="ei">📒</div>기록이 없습니다</div></td></tr>';return;}
+  tbody.innerHTML=data.map(e=>{
+    const tl=e.type==='swing'?'<span class="jttype sw">스윙</span>':'<span class="jttype sh">단기</span>';
+    const pc=e.pnl===null?'':e.pnl>0?'color:var(--green);':'color:var(--red);';
+    const ps=e.pnl===null?'—':(e.pnl>0?'+':'')+Math.round(e.pnl).toLocaleString('ko-KR')+'만';
+    const rs=e.result===null?'—':(e.result>0?'+':'')+e.result.toFixed(1)+'%';
+    const rc=e.result>0?'color:var(--green);':e.result<0?'color:var(--red);':'';
+    const sl=e.stoploss||e.target?`${e.stoploss?e.stoploss+'%':'—'} / ${e.target?'+'+e.target+'%':'—'}`:'—';
+    const inv=e.invest?Math.round(e.invest).toLocaleString('ko-KR')+'만':'—';
+    return`<tr>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);">${e.date}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--text);font-size:13px;">${e.ticker}</td>
+      <td>${tl}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:12px;">${inv}</td>
+      <td style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;">${sl}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:12px;${rc}">${rs}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-weight:600;${pc}">${ps}</td>
+      <td style="font-size:11px;color:var(--muted);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e.memo||''}">${e.memo||'—'}</td>
+      <td><button class="jt-del" onclick="deleteJournalEntry(${e.id})">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+renderJournal();
+
+/* ─ DART 공시 ─ */
+let _dartKey='cdca99ebee7d20b401e8b91fd063be4d30b2e6a6',_dartFilter='',_dartCorpCode='';
+
+function saveDartKey(){
+  const k=document.getElementById('dart_apikey').value.trim();
+  if(!k){alert('API 키를 입력해주세요.');return;}
+  _dartKey=k;
+  const st=document.getElementById('dart_key_status');
+  st.textContent='✅ API 키 저장됨. 이제 종목을 검색해보세요.';
+  st.style.color='var(--green)';
+}
+
+function setDartFilter(f,btn){
+  _dartFilter=f;
+  document.querySelectorAll('#panel-dart .f-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(_dartCorpCode)fetchDartList(_dartCorpCode);
+}
+
+/* JSONP 헬퍼 */
+function jsonp(url, cbName){
+  return new Promise((resolve, reject)=>{
+    const script=document.createElement('script');
+    window[cbName]=function(data){ resolve(data); delete window[cbName]; document.body.removeChild(script); };
+    script.onerror=()=>{ reject(new Error('JSONP 오류')); delete window[cbName]; document.body.removeChild(script); };
+    script.src=url+'&callback='+cbName;
+    document.body.appendChild(script);
+    setTimeout(()=>{ if(window[cbName]){ reject(new Error('요청 시간 초과')); delete window[cbName]; }}, 10000);
+  });
+}
+
+function searchDart(){
+  if(!_dartKey){alert('먼저 DART API 키를 저장해주세요.');return;}
+  const q=document.getElementById('dart_query').value.trim();
+  if(!q){alert('종목명을 입력해주세요.');return;}
+  const result=document.getElementById('dart_result');
+  result.innerHTML='<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px;">🔍 기업 검색 중...</div>';
+
+  const cbName='dartCb'+Date.now();
+  jsonp(`https://opendart.fss.or.kr/api/company.json?crtfc_key=${_dartKey}&corp_name=${encodeURIComponent(q)}&page_no=1&page_count=5`, cbName)
+  .then(data=>{
+    if(data.status!=='000'||!data.list||!data.list.length){
+      result.innerHTML=`<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px;">❌ "${q}" 에 해당하는 기업을 찾지 못했어요.</div>`;
+      return;
+    }
+    if(data.list.length>1){
+      result.innerHTML=`
+        <div style="font-size:11px;color:var(--muted);margin-bottom:10px;font-family:'IBM Plex Mono',monospace;">검색 결과 — 기업을 선택해주세요</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          ${data.list.map(c=>`
+            <div onclick="selectCorp('${c.corp_code}','${c.corp_name}')"
+              style="background:var(--surface);border:0.5px solid var(--border2);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;"
+              onmouseover="this.style.borderColor='var(--blue-b)'" onmouseout="this.style.borderColor='var(--border2)'">
+              <div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--text);font-size:13px;">${c.corp_name}</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:2px;">${c.stock_code||'비상장'} · ${c.corp_code}</div>
+              </div>
+              <div style="font-size:11px;color:var(--blue);">공시 보기 →</div>
+            </div>`).join('')}
+        </div>`;
+      return;
+    }
+    selectCorp(data.list[0].corp_code, data.list[0].corp_name);
+  })
+  .catch(e=>{
+    result.innerHTML=`<div style="padding:30px;text-align:center;color:var(--red);font-size:13px;">❌ 오류: ${e.message}<br><span style="font-size:11px;color:var(--muted);">API 키를 확인하거나 잠시 후 다시 시도해보세요.</span></div>`;
+  });
+}
+
+function selectCorp(corpCode,corpName){
+  _dartCorpCode=corpCode;
+  document.getElementById('dart_query').value=corpName;
+  fetchDartList(corpCode);
+}
+
+function fetchDartList(corpCode){
+  const result=document.getElementById('dart_result');
+  result.innerHTML='<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px;">📄 공시 불러오는 중...</div>';
+
+  let url=`https://opendart.fss.or.kr/api/list.json?crtfc_key=${_dartKey}&corp_code=${corpCode}&page_no=1&page_count=20`;
+  if(_dartFilter)url+=`&pblntf_ty=${_dartFilter}`;
+
+  const cbName='dartListCb'+Date.now();
+  jsonp(url, cbName)
+  .then(data=>{
+    if(data.status!=='000'||!data.list||!data.list.length){
+      result.innerHTML='<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px;">해당 조건의 공시가 없어요.</div>';
+      return;
+    }
+    const tc={'정기공시':'var(--blue)','주요사항보고':'var(--amber)','발행공시':'var(--green)','지분공시':'var(--purple)','외부감사관련':'var(--muted2)'};
+    result.innerHTML=`
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;font-family:'IBM Plex Mono',monospace;">최근 공시 ${data.list.length}건 · ${data.list[0].corp_name}</div>
+      <div style="background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;overflow:hidden;">
+        ${data.list.map((d,i)=>{
+          const col=tc[d.pblntf_ty_nm]||'var(--muted2)';
+          const dartUrl=`https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${d.rcept_no}`;
+          const date=`${d.rcept_dt.slice(0,4)}.${d.rcept_dt.slice(4,6)}.${d.rcept_dt.slice(6,8)}`;
+          return`<div onclick="window.open('${dartUrl}','_blank')"
+            style="padding:12px 14px;border-bottom:${i<data.list.length-1?'0.5px solid var(--border)':'none'};cursor:pointer;display:flex;gap:10px;align-items:flex-start;"
+            onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13px;color:var(--text);font-weight:500;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.report_nm}</div>
+              <div style="display:flex;gap:8px;align-items:center;margin-top:5px;flex-wrap:wrap;">
+                <span style="font-size:10px;padding:2px 7px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-weight:600;background:${col}22;color:${col};border:0.5px solid ${col}55;">${d.pblntf_ty_nm}</span>
+                <span style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;">${d.flr_nm}</span>
+                <span style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-left:auto;">${date}</span>
+              </div>
+            </div>
+            <div style="font-size:11px;color:var(--blue);white-space:nowrap;padding-top:2px;">열기 →</div>
+          </div>`;
+        }).join('')}
+      </div>`;
+  })
+  .catch(e=>{
+    result.innerHTML=`<div style="padding:30px;text-align:center;color:var(--red);font-size:13px;">❌ 공시 조회 실패: ${e.message}</div>`;
+  });
+}
+</script>
+</body>
+</html>
