@@ -189,7 +189,6 @@ h1{font-size:20px;font-weight:700;letter-spacing:-.02em;}
   <button class="tab" onclick="switchTab('rpos',this)">② R베팅·포지션</button>
   <button class="tab" onclick="switchTab('pyramiding',this)">③ 피라미딩</button>
   <button class="tab" onclick="switchTab('journal',this)">④ 매매일지</button>
-  <button class="tab" onclick="switchTab('dart',this)">⑤ DART</button>
 </div>
 
 <!-- ══ 탭1: 체크리스트 ══ -->
@@ -220,6 +219,49 @@ h1{font-size:20px;font-weight:700;letter-spacing:-.02em;}
   <div class="chk-log" id="checkLogSection">
     <div class="log-hdr"><span>체크 기록</span><button class="log-clr" onclick="clearCheckLog()">전체 삭제</button></div>
     <div class="chk-log-list" id="checkLogList"></div>
+  </div>
+
+  <!-- 빠른 링크 -->
+  <div style="margin-top:14px;">
+    <div style="font-size:10px;font-weight:700;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;">빠른 링크</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <a href="https://stockeasy.co.kr" target="_blank" style="text-decoration:none;">
+        <div style="background:var(--surface);border:0.5px solid var(--border2);border-radius:10px;padding:11px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;" onmouseover="this.style.borderColor='var(--blue-b)'" onmouseout="this.style.borderColor='var(--border2)'">
+          <div style="font-size:18px;">📊</div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--text);">스탁이지</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px;">차트 · RS · 수급</div>
+          </div>
+        </div>
+      </a>
+      <a href="https://dart.fss.or.kr" target="_blank" style="text-decoration:none;">
+        <div style="background:var(--surface);border:0.5px solid var(--border2);border-radius:10px;padding:11px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;" onmouseover="this.style.borderColor='var(--amber-b)'" onmouseout="this.style.borderColor='var(--border2)'">
+          <div style="font-size:18px;">📋</div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--text);">DART</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px;">공시 · 사업보고서</div>
+          </div>
+        </div>
+      </a>
+      <a href="https://finance.naver.com" target="_blank" style="text-decoration:none;">
+        <div style="background:var(--surface);border:0.5px solid var(--border2);border-radius:10px;padding:11px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;" onmouseover="this.style.borderColor='var(--green-b)'" onmouseout="this.style.borderColor='var(--border2)'">
+          <div style="font-size:18px;">📈</div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--text);">네이버 금융</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px;">시세 · 뉴스</div>
+          </div>
+        </div>
+      </a>
+      <a href="https://alphasquare.co.kr" target="_blank" style="text-decoration:none;">
+        <div style="background:var(--surface);border:0.5px solid var(--border2);border-radius:10px;padding:11px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;" onmouseover="this.style.borderColor='var(--purple-bg)'" onmouseout="this.style.borderColor='var(--border2)'">
+          <div style="font-size:18px;">🔭</div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--text);">알파스퀘어</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px;">수급 · 기관 외인</div>
+          </div>
+        </div>
+      </a>
+    </div>
   </div>
 </div>
 
@@ -521,48 +563,6 @@ h1{font-size:20px;font-weight:700;letter-spacing:-.02em;}
       </tbody>
     </table>
   </div>
-</div>
-
-<!-- ══ 탭5: DART 공시 ══ -->
-<div class="panel" id="panel-dart">
-
-  <!-- API 키 설정 -->
-  <div style="background:var(--surface);border:0.5px solid var(--amber-b);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
-    <div style="font-size:10px;font-weight:700;color:var(--amber);font-family:'IBM Plex Mono',monospace;letter-spacing:.1em;margin-bottom:10px;">DART API 키 설정</div>
-    <div style="display:flex;gap:8px;align-items:center;">
-      <input type="password" id="dart_apikey" placeholder="발급받은 API 키 입력" value="cdca99ebee7d20b401e8b91fd063be4d30b2e6a6" style="flex:1;background:var(--surface2);border:0.5px solid var(--border2);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:13px;outline:none;"/>
-      <button onclick="saveDartKey()" style="padding:8px 14px;border-radius:8px;border:none;background:var(--amber);color:#000;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;">저장</button>
-    </div>
-    <div style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.7;">
-      API 키가 없으면 → <a href="https://opendart.fss.or.kr" target="_blank" style="color:var(--blue);">opendart.fss.or.kr</a> 에서 무료 발급 (회원가입 후 즉시)
-    </div>
-    <div id="dart_key_status" style="font-size:11px;margin-top:6px;color:var(--green);">✅ API 키가 저장돼 있어요. 바로 종목을 검색해보세요.</div>
-  </div>
-
-  <!-- 종목 검색 -->
-  <div style="display:flex;gap:8px;margin-bottom:14px;">
-    <input type="text" id="dart_query" placeholder="종목명 검색  예) 삼성전자" style="flex:1;background:var(--surface);border:0.5px solid var(--border2);border-radius:10px;padding:11px 14px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;outline:none;" onkeydown="if(event.key==='Enter')searchDart()"/>
-    <button onclick="searchDart()" style="padding:11px 18px;border-radius:10px;border:none;background:var(--blue);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">검색</button>
-  </div>
-
-  <!-- 공시 유형 필터 -->
-  <div class="f-row" style="margin-bottom:12px;">
-    <button class="f-btn active" onclick="setDartFilter('',this)">전체</button>
-    <button class="f-btn" onclick="setDartFilter('A',this)">정기공시</button>
-    <button class="f-btn" onclick="setDartFilter('B',this)">주요사항</button>
-    <button class="f-btn" onclick="setDartFilter('C',this)">발행공시</button>
-    <button class="f-btn" onclick="setDartFilter('D',this)">지분공시</button>
-    <button class="f-btn" onclick="setDartFilter('F',this)">외부감사</button>
-  </div>
-
-  <!-- 결과 -->
-  <div id="dart_result">
-    <div class="j-empty" style="padding:40px 20px;text-align:center;color:var(--muted);font-size:13px;">
-      <div style="font-size:32px;margin-bottom:10px;">📋</div>
-      종목명을 검색하면 최신 공시 목록이 표시됩니다
-    </div>
-  </div>
-
 </div>
 
 </div><!-- /container -->
@@ -973,162 +973,7 @@ function renderJournal(){
 }
 renderJournal();
 
-/* ─ DART 공시 ─ */
-let _dartKey='cdca99ebee7d20b401e8b91fd063be4d30b2e6a6',_dartFilter='',_dartCorpCode='';
 
-async function dartFetch(url){
-  // allorigins 프록시 사용
-  const proxyUrl=`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-  const res=await fetch(proxyUrl);
-  if(!res.ok)throw new Error('HTTP '+res.status);
-  const wrapper=await res.json();
-  return JSON.parse(wrapper.contents);
-}
-
-function saveDartKey(){
-  const k=document.getElementById('dart_apikey').value.trim();
-  if(!k){alert('API 키를 입력해주세요.');return;}
-  _dartKey=k;
-  const st=document.getElementById('dart_key_status');
-  st.textContent='✅ API 키 저장됨. 이제 종목을 검색해보세요.';
-  st.style.color='var(--green)';
-}
-
-function setDartFilter(f,btn){
-  _dartFilter=f;
-  document.querySelectorAll('#panel-dart .f-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  if(_dartCorpCode)fetchDartList(_dartCorpCode);
-}
-
-async function searchDart(){
-  if(!_dartKey){alert('먼저 DART API 키를 저장해주세요.');return;}
-  const q=document.getElementById('dart_query').value.trim();
-  if(!q){alert('종목명을 입력해주세요.');return;}
-  const result=document.getElementById('dart_result');
-  result.innerHTML='<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px;">🔍 기업 검색 중...</div>';
-  try{
-    const data=await dartFetch(`https://opendart.fss.or.kr/api/company.json?crtfc_key=${_dartKey}&corp_name=${encodeURIComponent(q)}&page_no=1&page_count=5`);
-    if(data.status!=='000'||!data.list||!data.list.length){
-      result.innerHTML=`<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px;">❌ "${q}" 에 해당하는 기업을 찾지 못했어요.</div>`;
-      return;
-    }
-    if(data.list.length>1){
-      result.innerHTML=`
-        <div style="font-size:11px;color:var(--muted);margin-bottom:10px;font-family:'IBM Plex Mono',monospace;">검색 결과 — 기업을 선택해주세요</div>
-        <div style="display:flex;flex-direction:column;gap:6px;">
-          ${data.list.map(c=>`
-            <div onclick="selectCorp('${c.corp_code}','${c.corp_name}')"
-              style="background:var(--surface);border:0.5px solid var(--border2);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;"
-              onmouseover="this.style.borderColor='var(--blue-b)'" onmouseout="this.style.borderColor='var(--border2)'">
-              <div>
-                <div style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--text);font-size:13px;">${c.corp_name}</div>
-                <div style="font-size:11px;color:var(--muted);margin-top:2px;">${c.stock_code||'비상장'} · ${c.corp_code}</div>
-              </div>
-              <div style="font-size:11px;color:var(--blue);">공시 보기 →</div>
-            </div>`).join('')}
-        </div>`;
-      return;
-    }
-    selectCorp(data.list[0].corp_code,data.list[0].corp_name);
-  }catch(e){
-    result.innerHTML=`<div style="padding:30px;text-align:center;color:var(--red);font-size:13px;">❌ 오류: ${e.message}<br><span style="font-size:11px;color:var(--muted);">잠시 후 다시 시도해보세요.</span></div>`;
-  }
-}
-
-function selectCorp(corpCode,corpName){
-  _dartCorpCode=corpCode;
-  document.getElementById('dart_query').value=corpName;
-  fetchDartList(corpCode);
-}
-
-async function fetchDartList(corpCode){
-  const result=document.getElementById('dart_result');
-  result.innerHTML='<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px;">📄 공시 불러오는 중...</div>';
-  try{
-    let url=`https://opendart.fss.or.kr/api/list.json?crtfc_key=${_dartKey}&corp_code=${corpCode}&page_no=1&page_count=20`;
-    if(_dartFilter)url+=`&pblntf_ty=${_dartFilter}`;
-    const data=await dartFetch(url);
-    if(data.status!=='000'||!data.list||!data.list.length){
-      result.innerHTML='<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px;">해당 조건의 공시가 없어요.</div>';
-      return;
-    }
-    const tc={'정기공시':'var(--blue)','주요사항보고':'var(--amber)','발행공시':'var(--green)','지분공시':'var(--purple)','외부감사관련':'var(--muted2)'};
-    result.innerHTML=`
-      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;font-family:'IBM Plex Mono',monospace;">최근 공시 ${data.list.length}건 · ${data.list[0].corp_name}</div>
-      <div style="background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;overflow:hidden;">
-        ${data.list.map((d,i)=>{
-          const col=tc[d.pblntf_ty_nm]||'var(--muted2)';
-          const dartUrl=`https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${d.rcept_no}`;
-          const date=`${d.rcept_dt.slice(0,4)}.${d.rcept_dt.slice(4,6)}.${d.rcept_dt.slice(6,8)}`;
-          return`<div onclick="window.open('${dartUrl}','_blank')"
-            style="padding:12px 14px;border-bottom:${i<data.list.length-1?'0.5px solid var(--border)':'none'};cursor:pointer;display:flex;gap:10px;align-items:flex-start;"
-            onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
-            <div style="flex:1;min-width:0;">
-              <div style="font-size:13px;color:var(--text);font-weight:500;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.report_nm}</div>
-              <div style="display:flex;gap:8px;align-items:center;margin-top:5px;flex-wrap:wrap;">
-                <span style="font-size:10px;padding:2px 7px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-weight:600;background:${col}22;color:${col};border:0.5px solid ${col}55;">${d.pblntf_ty_nm}</span>
-                <span style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;">${d.flr_nm}</span>
-                <span style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-left:auto;">${date}</span>
-              </div>
-            </div>
-            <div style="font-size:11px;color:var(--blue);white-space:nowrap;padding-top:2px;">열기 →</div>
-          </div>`;
-        }).join('')}
-      </div>`;
-  }catch(e){
-    result.innerHTML=`<div style="padding:30px;text-align:center;color:var(--red);font-size:13px;">❌ 공시 조회 실패: ${e.message}</div>`;
-  }
-}
-
-function selectCorp(corpCode,corpName){
-  _dartCorpCode=corpCode;
-  document.getElementById('dart_query').value=corpName;
-  fetchDartList(corpCode);
-}
-
-function fetchDartList(corpCode){
-  const result=document.getElementById('dart_result');
-  result.innerHTML='<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px;">📄 공시 불러오는 중...</div>';
-
-  let url=`https://opendart.fss.or.kr/api/list.json?crtfc_key=${_dartKey}&corp_code=${corpCode}&page_no=1&page_count=20`;
-  if(_dartFilter)url+=`&pblntf_ty=${_dartFilter}`;
-
-  const cbName='dartListCb'+Date.now();
-  jsonp(url, cbName)
-  .then(data=>{
-    if(data.status!=='000'||!data.list||!data.list.length){
-      result.innerHTML='<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px;">해당 조건의 공시가 없어요.</div>';
-      return;
-    }
-    const tc={'정기공시':'var(--blue)','주요사항보고':'var(--amber)','발행공시':'var(--green)','지분공시':'var(--purple)','외부감사관련':'var(--muted2)'};
-    result.innerHTML=`
-      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;font-family:'IBM Plex Mono',monospace;">최근 공시 ${data.list.length}건 · ${data.list[0].corp_name}</div>
-      <div style="background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;overflow:hidden;">
-        ${data.list.map((d,i)=>{
-          const col=tc[d.pblntf_ty_nm]||'var(--muted2)';
-          const dartUrl=`https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${d.rcept_no}`;
-          const date=`${d.rcept_dt.slice(0,4)}.${d.rcept_dt.slice(4,6)}.${d.rcept_dt.slice(6,8)}`;
-          return`<div onclick="window.open('${dartUrl}','_blank')"
-            style="padding:12px 14px;border-bottom:${i<data.list.length-1?'0.5px solid var(--border)':'none'};cursor:pointer;display:flex;gap:10px;align-items:flex-start;"
-            onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
-            <div style="flex:1;min-width:0;">
-              <div style="font-size:13px;color:var(--text);font-weight:500;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.report_nm}</div>
-              <div style="display:flex;gap:8px;align-items:center;margin-top:5px;flex-wrap:wrap;">
-                <span style="font-size:10px;padding:2px 7px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-weight:600;background:${col}22;color:${col};border:0.5px solid ${col}55;">${d.pblntf_ty_nm}</span>
-                <span style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;">${d.flr_nm}</span>
-                <span style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-left:auto;">${date}</span>
-              </div>
-            </div>
-            <div style="font-size:11px;color:var(--blue);white-space:nowrap;padding-top:2px;">열기 →</div>
-          </div>`;
-        }).join('')}
-      </div>`;
-  })
-  .catch(e=>{
-    result.innerHTML=`<div style="padding:30px;text-align:center;color:var(--red);font-size:13px;">❌ 공시 조회 실패: ${e.message}</div>`;
-  });
-}
 </script>
 </body>
 </html>
