@@ -1018,34 +1018,43 @@ async function searchDart(){
         <div style="font-size:11px;color:var(--muted);margin-bottom:10px;font-family:'IBM Plex Mono',monospace;">검색 결과 — 기업을 선택해주세요</div>
         <div style="display:flex;flex-direction:column;gap:6px;">
           ${data.list.map(c=>`
-            <div onclick="selectCorp('${c.corp_code}','${c.corp_name}')"
-              style="background:var(--surface);border:0.5px solid var(--border2);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;"
-              onmouseover="this.style.borderColor='var(--blue-b)'" onmouseout="this.style.borderColor='var(--border2)'">
-              <div>
-                <div style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--text);font-size:13px;">${c.corp_name}</div>
-                <div style="font-size:11px;color:var(--muted);margin-top:2px;">${c.stock_code||'비상장'} · ${c.corp_code}</div>
-              </div>
-              <div style="font-size:11px;color:var(--blue);">공시 보기 →</div>
-            </div>`).join('')}
-        </div>`;
-      return;
+           async function updateDart() {
+    const key = document.getElementById('dartApiKey').value;
+    const corpCode = document.getElementById('dartCorpCode').value;
+    const bgnDe = document.getElementById('dartBgnDe').value.replace(/-/g, '');
+    const listEl = document.getElementById('dartResultList');
+
+    if (!key || !corpCode) {
+        showDartError('API 키와 종목코드를 입력해주세요.');
+        return;
     }
-    selectCorp(data.list[0].corp_code,data.list[0].corp_name);
-  }catch(e){
-    result.innerHTML=`<div style="padding:30px;text-align:center;color:var(--red);font-size:13px;">❌ 오류: ${e.message}<br><span style="font-size:11px;color:var(--muted);">잠시 후 다시 시도해보세요.</span></div>`;
-  }
-}
 
-function selectCorp(corpCode,corpName){
-  _dartCorpCode=corpCode;
-  document.getElementById('dart_query').value=corpName;
-  fetchDartList(corpCode);
-}
+    listEl.innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted);font-size:13px;">공시 데이터를 불러오는 중...</div>';
 
-async function fetchDartList(corpCode){
-  const result=document.getElementById('dart_result');
-  result.innerHTML='<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px;">📄 공시 불러오는 중...</div>';
-  try{
+    // 1. DART API 주소 설정
+    const targetUrl = `https://opendart.fss.or.kr/api/list.json?crtfc_key=${key}&corp_code=${corpCode}&bgn_de=${bgnDe}&last_reprt_at=Y`;
+    
+    // 2. CORS 해결을 위한 프록시 서버 사용 (allorigins)
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+
+    try {
+        const response = await fetch(proxyUrl);
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        const result = await response.json();
+        // allorigins 프록시는 실제 데이터를 result.contents 안에 문자열로 담아줍니다.
+        const data = JSON.parse(result.contents);
+
+        if (data.status === '000') {
+            renderDartList(data);
+        } else {
+            showDartError(data.message || '공시 데이터가 없습니다.');
+        }
+    } catch (error) {
+        console.error('DART Error:', error);
+        showDartError('통신 오류가 발생했습니다. API 키나 종목코드를 확인해주세요.');
+    }
+}
     let url=`https://opendart.fss.or.kr/api/list.json?crtfc_key=${_dartKey}&corp_code=${corpCode}&page_no=1&page_count=20`;
     if(_dartFilter)url+=`&pblntf_ty=${_dartFilter}`;
     const data=await dartFetch(url);
