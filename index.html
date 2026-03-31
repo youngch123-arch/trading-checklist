@@ -1018,84 +1018,34 @@ async function searchDart(){
         <div style="font-size:11px;color:var(--muted);margin-bottom:10px;font-family:'IBM Plex Mono',monospace;">검색 결과 — 기업을 선택해주세요</div>
         <div style="display:flex;flex-direction:column;gap:6px;">
           ${data.list.map(c=>`
-        // 검색 결과 HTML 생성 함수
-function renderCorpList(corps) {
-    const resultEl = document.getElementById('searchResult');
-    if (!corps || corps.length === 0) {
-        resultEl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);">검색 결과가 없습니다.</div>';
-        return;
-    }
-
-    resultEl.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
-            ${corps.map(c => `
-                <div onclick="selectCorp('${c.corp_code}', '${c.corp_name}')"
-                     style="background:var(--surface); border:0.5px solid var(--border2); border-radius:10px; padding:12px 14px; cursor:pointer; display:flex; align-items:center; justify-content:space-between;"
-                     onmouseover="this.style.borderColor='var(--blue-b)'" 
-                     onmouseout="this.style.borderColor='var(--border2)'">
-                    <div>
-                        <div style="font-family:'IBM Plex Mono',monospace; font-weight:600; color:var(--text); font-size:13px;">${c.corp_name}</div>
-                        <div style="font-size:11px; color:var(--muted); margin-top:2px;">
-                            ${c.stock_code ? c.stock_code : '비상장'} · ${c.corp_code}
-                        </div>
-                    </div>
-                    <div style="font-size:11px; color:var(--blue);">선택 →</div>
-                </div>
-            `).join('')}
+            <div onclick="selectCorp('${c.corp_code}','${c.corp_name}')"
+              style="background:var(--surface);border:0.5px solid var(--border2);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;"
+              onmouseover="this.style.borderColor='var(--blue-b)'" onmouseout="this.style.borderColor='var(--border2)'">
+              <div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--text);font-size:13px;">${c.corp_name}</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:2px;">${c.stock_code||'비상장'} · ${c.corp_code}</div>
+              </div>
+              <div style="font-size:11px;color:var(--blue);">공시 보기 →</div>
+            </div>`).join('')}
         </div>`;
-}
-    let _dartCorpCode = ''; // 선택된 종목 코드를 저장할 변수
-
-async function updateDart() {
-    const key = document.getElementById('dartApiKey').value;
-    const corpCode = document.getElementById('dartCorpCode').value;
-    const resultEl = document.getElementById('dartResultList');
-
-    if (!key || !corpCode) {
-        alert('API 키와 종목코드를 확인해주세요.');
-        return;
+      return;
     }
-
-    try {
-        // 여기에 DART API 호출 fetch 로직이 들어갑니다.
-        // 예: const res = await fetch(`...`); 
-        // const data = await res.json();
-        
-        // 만약 검색 후 바로 첫 번째 항목을 선택하게 하고 싶다면:
-        // if (data.list && data.list.length > 0) {
-        //     selectCorp(data.list[0].corp_code, data.list[0].corp_name);
-        // }
-    } catch (e) {
-        resultEl.innerHTML = `<div style="padding:30px;text-align:center;color:var(--red);font-size:13px;">❌ 오류: ${e.message}</div>`;
-    }
+    selectCorp(data.list[0].corp_code,data.list[0].corp_name);
+  }catch(e){
+    result.innerHTML=`<div style="padding:30px;text-align:center;color:var(--red);font-size:13px;">❌ 오류: ${e.message}<br><span style="font-size:11px;color:var(--muted);">잠시 후 다시 시도해보세요.</span></div>`;
+  }
 }
 
-function selectCorp(corpCode, corpName) {
-    _dartCorpCode = corpCode;
-    // 입력창에 선택한 종목명 넣기
-    const queryInput = document.getElementById('dart_query');
-    if (queryInput) queryInput.value = corpName;
-    
-    // 숨겨진 corpCode 입력창이 있다면 값 업데이트
-    const codeInput = document.getElementById('dartCorpCode');
-    if (codeInput) codeInput.value = corpCode;
-
-    // 선택 후 공시 리스트를 바로 불러오려면 아래 함수 실행
-    if (typeof fetchDartList === 'function') {
-        fetchDartList(corpCode);
-    }
+function selectCorp(corpCode,corpName){
+  _dartCorpCode=corpCode;
+  document.getElementById('dart_query').value=corpName;
+  fetchDartList(corpCode);
 }
 
-        if (data.status === '000') {
-            renderDartList(data);
-        } else {
-            showDartError(data.message || '공시 데이터가 없습니다.');
-        }
-    } catch (error) {
-        console.error('DART Error:', error);
-        showDartError('통신 오류가 발생했습니다. API 키나 종목코드를 확인해주세요.');
-    }
-}
+async function fetchDartList(corpCode){
+  const result=document.getElementById('dart_result');
+  result.innerHTML='<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px;">📄 공시 불러오는 중...</div>';
+  try{
     let url=`https://opendart.fss.or.kr/api/list.json?crtfc_key=${_dartKey}&corp_code=${corpCode}&page_no=1&page_count=20`;
     if(_dartFilter)url+=`&pblntf_ty=${_dartFilter}`;
     const data=await dartFetch(url);
