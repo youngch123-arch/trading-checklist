@@ -975,6 +975,7 @@ renderJournal();
 
 /* ─ DART 공시 ─ */
 let _dartKey='cdca99ebee7d20b401e8b91fd063be4d30b2e6a6',_dartFilter='',_dartCorpCode='';
+const PROXY='https://corsproxy.io/?url=';
 
 function saveDartKey(){
   const k=document.getElementById('dart_apikey').value.trim();
@@ -992,28 +993,20 @@ function setDartFilter(f,btn){
   if(_dartCorpCode)fetchDartList(_dartCorpCode);
 }
 
-/* JSONP 헬퍼 */
-function jsonp(url, cbName){
-  return new Promise((resolve, reject)=>{
-    const script=document.createElement('script');
-    window[cbName]=function(data){ resolve(data); delete window[cbName]; document.body.removeChild(script); };
-    script.onerror=()=>{ reject(new Error('JSONP 오류')); delete window[cbName]; document.body.removeChild(script); };
-    script.src=url+'&callback='+cbName;
-    document.body.appendChild(script);
-    setTimeout(()=>{ if(window[cbName]){ reject(new Error('요청 시간 초과')); delete window[cbName]; }}, 10000);
-  });
+async function dartFetch(url){
+  const res=await fetch(PROXY+encodeURIComponent(url));
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  return res.json();
 }
 
-function searchDart(){
+async function searchDart(){
   if(!_dartKey){alert('먼저 DART API 키를 저장해주세요.');return;}
   const q=document.getElementById('dart_query').value.trim();
   if(!q){alert('종목명을 입력해주세요.');return;}
   const result=document.getElementById('dart_result');
   result.innerHTML='<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px;">🔍 기업 검색 중...</div>';
-
-  const cbName='dartCb'+Date.now();
-  jsonp(`https://opendart.fss.or.kr/api/company.json?crtfc_key=${_dartKey}&corp_name=${encodeURIComponent(q)}&page_no=1&page_count=5`, cbName)
-  .then(data=>{
+  try{
+    const data=await dartFetch(`https://opendart.fss.or.kr/api/company.json?crtfc_key=${_dartKey}&corp_name=${encodeURIComponent(q)}&page_no=1&page_count=5`);
     if(data.status!=='000'||!data.list||!data.list.length){
       result.innerHTML=`<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px;">❌ "${q}" 에 해당하는 기업을 찾지 못했어요.</div>`;
       return;
@@ -1035,11 +1028,55 @@ function searchDart(){
         </div>`;
       return;
     }
-    selectCorp(data.list[0].corp_code, data.list[0].corp_name);
-  })
-  .catch(e=>{
-    result.innerHTML=`<div style="padding:30px;text-align:center;color:var(--red);font-size:13px;">❌ 오류: ${e.message}<br><span style="font-size:11px;color:var(--muted);">API 키를 확인하거나 잠시 후 다시 시도해보세요.</span></div>`;
-  });
+    selectCorp(data.list[0].corp_code,data.list[0].corp_name);
+  }catch(e){
+    result.innerHTML=`<div style="padding:30px;text-align:center;color:var(--red);font-size:13px;">❌ 오류: ${e.message}<br><span style="font-size:11px;color:var(--muted);">잠시 후 다시 시도해보세요.</span></div>`;
+  }
+}
+
+function selectCorp(corpCode,corpName){
+  _dartCorpCode=corpCode;
+  document.getElementById('dart_query').value=corpName;
+  fetchDartList(corpCode);
+}
+
+async function fetchDartList(corpCode){
+  const result=document.getElementById('dart_result');
+  result.innerHTML='<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px;">📄 공시 불러오는 중...</div>';
+  try{
+    let url=`https://opendart.fss.or.kr/api/list.json?crtfc_key=${_dartKey}&corp_code=${corpCode}&page_no=1&page_count=20`;
+    if(_dartFilter)url+=`&pblntf_ty=${_dartFilter}`;
+    const data=await dartFetch(url);
+    if(data.status!=='000'||!data.list||!data.list.length){
+      result.innerHTML='<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px;">해당 조건의 공시가 없어요.</div>';
+      return;
+    }
+    const tc={'정기공시':'var(--blue)','주요사항보고':'var(--amber)','발행공시':'var(--green)','지분공시':'var(--purple)','외부감사관련':'var(--muted2)'};
+    result.innerHTML=`
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;font-family:'IBM Plex Mono',monospace;">최근 공시 ${data.list.length}건 · ${data.list[0].corp_name}</div>
+      <div style="background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;overflow:hidden;">
+        ${data.list.map((d,i)=>{
+          const col=tc[d.pblntf_ty_nm]||'var(--muted2)';
+          const dartUrl=`https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${d.rcept_no}`;
+          const date=`${d.rcept_dt.slice(0,4)}.${d.rcept_dt.slice(4,6)}.${d.rcept_dt.slice(6,8)}`;
+          return`<div onclick="window.open('${dartUrl}','_blank')"
+            style="padding:12px 14px;border-bottom:${i<data.list.length-1?'0.5px solid var(--border)':'none'};cursor:pointer;display:flex;gap:10px;align-items:flex-start;"
+            onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13px;color:var(--text);font-weight:500;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.report_nm}</div>
+              <div style="display:flex;gap:8px;align-items:center;margin-top:5px;flex-wrap:wrap;">
+                <span style="font-size:10px;padding:2px 7px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-weight:600;background:${col}22;color:${col};border:0.5px solid ${col}55;">${d.pblntf_ty_nm}</span>
+                <span style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;">${d.flr_nm}</span>
+                <span style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-left:auto;">${date}</span>
+              </div>
+            </div>
+            <div style="font-size:11px;color:var(--blue);white-space:nowrap;padding-top:2px;">열기 →</div>
+          </div>`;
+        }).join('')}
+      </div>`;
+  }catch(e){
+    result.innerHTML=`<div style="padding:30px;text-align:center;color:var(--red);font-size:13px;">❌ 공시 조회 실패: ${e.message}</div>`;
+  }
 }
 
 function selectCorp(corpCode,corpName){
