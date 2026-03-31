@@ -975,7 +975,15 @@ renderJournal();
 
 /* ─ DART 공시 ─ */
 let _dartKey='cdca99ebee7d20b401e8b91fd063be4d30b2e6a6',_dartFilter='',_dartCorpCode='';
-const PROXY='https://corsproxy.io/?url=';
+
+async function dartFetch(url){
+  // allorigins 프록시 사용
+  const proxyUrl=`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+  const res=await fetch(proxyUrl);
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  const wrapper=await res.json();
+  return JSON.parse(wrapper.contents);
+}
 
 function saveDartKey(){
   const k=document.getElementById('dart_apikey').value.trim();
@@ -991,12 +999,6 @@ function setDartFilter(f,btn){
   document.querySelectorAll('#panel-dart .f-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   if(_dartCorpCode)fetchDartList(_dartCorpCode);
-}
-
-async function dartFetch(url){
-  const res=await fetch(PROXY+encodeURIComponent(url));
-  if(!res.ok)throw new Error('HTTP '+res.status);
-  return res.json();
 }
 
 async function searchDart(){
