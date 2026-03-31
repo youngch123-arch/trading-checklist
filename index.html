@@ -1018,32 +1018,73 @@ async function searchDart(){
         <div style="font-size:11px;color:var(--muted);margin-bottom:10px;font-family:'IBM Plex Mono',monospace;">검색 결과 — 기업을 선택해주세요</div>
         <div style="display:flex;flex-direction:column;gap:6px;">
           ${data.list.map(c=>`
-           async function updateDart() {
-    const key = document.getElementById('dartApiKey').value;
-    const corpCode = document.getElementById('dartCorpCode').value;
-    const bgnDe = document.getElementById('dartBgnDe').value.replace(/-/g, '');
-    const listEl = document.getElementById('dartResultList');
-
-    if (!key || !corpCode) {
-        showDartError('API 키와 종목코드를 입력해주세요.');
+        // 검색 결과 HTML 생성 함수
+function renderCorpList(corps) {
+    const resultEl = document.getElementById('searchResult');
+    if (!corps || corps.length === 0) {
+        resultEl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);">검색 결과가 없습니다.</div>';
         return;
     }
 
-    listEl.innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted);font-size:13px;">공시 데이터를 불러오는 중...</div>';
+    resultEl.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
+            ${corps.map(c => `
+                <div onclick="selectCorp('${c.corp_code}', '${c.corp_name}')"
+                     style="background:var(--surface); border:0.5px solid var(--border2); border-radius:10px; padding:12px 14px; cursor:pointer; display:flex; align-items:center; justify-content:space-between;"
+                     onmouseover="this.style.borderColor='var(--blue-b)'" 
+                     onmouseout="this.style.borderColor='var(--border2)'">
+                    <div>
+                        <div style="font-family:'IBM Plex Mono',monospace; font-weight:600; color:var(--text); font-size:13px;">${c.corp_name}</div>
+                        <div style="font-size:11px; color:var(--muted); margin-top:2px;">
+                            ${c.stock_code ? c.stock_code : '비상장'} · ${c.corp_code}
+                        </div>
+                    </div>
+                    <div style="font-size:11px; color:var(--blue);">선택 →</div>
+                </div>
+            `).join('')}
+        </div>`;
+}
+    let _dartCorpCode = ''; // 선택된 종목 코드를 저장할 변수
 
-    // 1. DART API 주소 설정
-    const targetUrl = `https://opendart.fss.or.kr/api/list.json?crtfc_key=${key}&corp_code=${corpCode}&bgn_de=${bgnDe}&last_reprt_at=Y`;
-    
-    // 2. CORS 해결을 위한 프록시 서버 사용 (allorigins)
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+async function updateDart() {
+    const key = document.getElementById('dartApiKey').value;
+    const corpCode = document.getElementById('dartCorpCode').value;
+    const resultEl = document.getElementById('dartResultList');
+
+    if (!key || !corpCode) {
+        alert('API 키와 종목코드를 확인해주세요.');
+        return;
+    }
 
     try {
-        const response = await fetch(proxyUrl);
-        if (!response.ok) throw new Error('Network response was not ok');
+        // 여기에 DART API 호출 fetch 로직이 들어갑니다.
+        // 예: const res = await fetch(`...`); 
+        // const data = await res.json();
         
-        const result = await response.json();
-        // allorigins 프록시는 실제 데이터를 result.contents 안에 문자열로 담아줍니다.
-        const data = JSON.parse(result.contents);
+        // 만약 검색 후 바로 첫 번째 항목을 선택하게 하고 싶다면:
+        // if (data.list && data.list.length > 0) {
+        //     selectCorp(data.list[0].corp_code, data.list[0].corp_name);
+        // }
+    } catch (e) {
+        resultEl.innerHTML = `<div style="padding:30px;text-align:center;color:var(--red);font-size:13px;">❌ 오류: ${e.message}</div>`;
+    }
+}
+
+function selectCorp(corpCode, corpName) {
+    _dartCorpCode = corpCode;
+    // 입력창에 선택한 종목명 넣기
+    const queryInput = document.getElementById('dart_query');
+    if (queryInput) queryInput.value = corpName;
+    
+    // 숨겨진 corpCode 입력창이 있다면 값 업데이트
+    const codeInput = document.getElementById('dartCorpCode');
+    if (codeInput) codeInput.value = corpCode;
+
+    // 선택 후 공시 리스트를 바로 불러오려면 아래 함수 실행
+    if (typeof fetchDartList === 'function') {
+        fetchDartList(corpCode);
+    }
+}
 
         if (data.status === '000') {
             renderDartList(data);
