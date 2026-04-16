@@ -504,8 +504,38 @@ h1{font-size:20px;font-weight:700;letter-spacing:-.02em;}
         </div>
       </div>
     </div>
+
+    <!-- 종목 저장 -->
+    <div style="margin-top:10px;background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:14px 16px;">
+      <div style="font-size:10px;font-weight:700;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">매매 기록 저장</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+        <div class="ff"><label>종목명</label><input type="text" id="py_save_ticker" placeholder="예) 삼성전자"/></div>
+        <div class="ff"><label>날짜</label><input type="date" id="py_save_date"/></div>
+        <div class="ff"><label>결과 (실제 수익률 %)</label><input type="number" id="py_save_result" placeholder="예) 18.5 또는 -8" step="0.1"/></div>
+        <div class="ff"><label>메모</label><input type="text" id="py_save_memo" placeholder="간단한 메모"/></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-p" onclick="savePyRecord()" style="padding:8px 18px;">기록 저장</button>
+        <button class="ghost-btn" style="font-size:11px;border-color:var(--green-b);color:var(--green);" onclick="exportPyData()">💾 내보내기</button>
+        <button class="ghost-btn" style="font-size:11px;border-color:var(--blue-b);color:var(--blue);" onclick="importPyData()">📂 불러오기</button>
+      </div>
+      <input type="file" id="pyImportFile" accept=".json" style="display:none;" onchange="handlePyImport(this)"/>
+    </div>
   </div>
-</div>
+
+  <!-- 피라미딩 매매 기록 목록 -->
+  <div style="margin-top:14px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div class="sec-title" style="margin-bottom:0;">피라미딩 매매 기록</div>
+      <span id="py_record_count" style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;">0건</span>
+    </div>
+    <div id="py_record_list">
+      <div style="background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:30px;text-align:center;color:var(--muted);font-size:13px;">
+        <div style="font-size:28px;margin-bottom:8px;">📊</div>
+        저장된 피라미딩 기록이 없어요
+      </div>
+    </div>
+  </div>
 
 <!-- ══ 탭4: 매매일지 ══ -->
 <div class="panel" id="panel-journal">
@@ -516,7 +546,8 @@ h1{font-size:20px;font-weight:700;letter-spacing:-.02em;}
     <div class="jsc a"><div class="sl">승률</div><div class="sv" id="j_winrate">—</div><div class="ss">수익 / 전체</div></div>
   </div>
   <div class="add-form">
-    <div class="form-title">+ 매매 기록 추가</div>
+    <div class="form-title" id="j_form_title">+ 매매 기록 추가</div>
+    <input type="hidden" id="j_edit_id"/>
     <div class="frow">
       <div class="ff"><label>날짜</label><input type="date" id="j_date"/></div>
       <div class="ff"><label>종목명</label><input type="text" id="j_ticker" placeholder="삼성전자"/></div>
@@ -538,6 +569,7 @@ h1{font-size:20px;font-weight:700;letter-spacing:-.02em;}
     <div class="form-actions">
       <button class="btn-p" onclick="addJournalEntry()">저장</button>
       <button class="btn-s" onclick="clearJournalForm()">초기화</button>
+      <button class="btn-s" id="j_cancel_edit" onclick="cancelEdit()" style="display:none;border-color:var(--red-b);color:var(--red);">수정 취소</button>
     </div>
   </div>
   <div class="f-row">
@@ -862,12 +894,177 @@ function calcSimulator(){
 }
 renderTrancheInputs();
 
+/* ─ 피라미딩 매매 기록 ─ */
+let _pyRecords = [];
+
+function savePyRecordsLocal(){
+  try{localStorage.setItem('py_records',JSON.stringify(_pyRecords));}catch(e){}
+}
+function loadPyRecords(){
+  try{
+    const saved=localStorage.getItem('py_records');
+    if(saved) _pyRecords=JSON.parse(saved);
+  }catch(e){_pyRecords=[];}
+}
+
+// 오늘 날짜 기본값
+document.addEventListener('DOMContentLoaded', ()=>{
+  const d = document.getElementById('py_save_date');
+  if(d) d.value = new Date().toISOString().split('T')[0];
+});
+
+function savePyRecord(){
+  const ticker = document.getElementById('py_save_ticker').value.trim();
+  if(!ticker){ alert('종목명을 입력해주세요.'); return; }
+  if(!window._pyData){ alert('먼저 피라미딩을 계산해주세요.'); return; }
+
+  const d = window._pyData;
+  const result = parseFloat(document.getElementById('py_save_result').value);
+  const memo = document.getElementById('py_save_memo').value.trim();
+  const date = document.getElementById('py_save_date').value || new Date().toISOString().split('T')[0];
+
+  // 실제 손익 계산
+  const pnl = !isNaN(result) ? d.ti * result / 100 : null;
+
+  const record = {
+    id: Date.now(),
+    date, ticker,
+    entry1: d.e1,
+    stopPrice: d.sp,
+    targetPrice: d.tg,
+    avgPrice: Math.round(d.avg),
+    totalInvest: d.ti,
+    tranches: tranches.filter(t=>t.entry||t.amount).map(t=>({...t})),
+    stopPct: parseFloat(document.getElementById('py_stop_pct').value)||0,
+    targetPct: parseFloat(document.getElementById('py_target_pct').value)||0,
+    result: isNaN(result)?null:result,
+    pnl,
+    memo
+  };
+
+  _pyRecords.unshift(record);
+  savePyRecordsLocal();
+  renderPyRecords();
+
+  // 입력 초기화
+  document.getElementById('py_save_ticker').value='';
+  document.getElementById('py_save_result').value='';
+  document.getElementById('py_save_memo').value='';
+
+  const btn = document.querySelector('[onclick="savePyRecord()"]');
+  btn.textContent='저장됨!';
+  setTimeout(()=>{ btn.textContent='기록 저장'; }, 1500);
+}
+
+function deletePyRecord(id){
+  if(!confirm('이 기록을 삭제할까요?')) return;
+  _pyRecords = _pyRecords.filter(r=>r.id!==id);
+  savePyRecordsLocal();
+  renderPyRecords();
+}
+
+function renderPyRecords(){
+  const list = document.getElementById('py_record_list');
+  const count = document.getElementById('py_record_count');
+  count.textContent = _pyRecords.length + '건';
+
+  if(!_pyRecords.length){
+    list.innerHTML=`<div style="background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:30px;text-align:center;color:var(--muted);font-size:13px;"><div style="font-size:28px;margin-bottom:8px;">📊</div>저장된 피라미딩 기록이 없어요</div>`;
+    return;
+  }
+
+  list.innerHTML = _pyRecords.map(r=>{
+    const pnlColor = r.pnl===null?'var(--muted2)':r.pnl>0?'var(--green)':'var(--red)';
+    const pnlStr = r.pnl===null?'—':(r.pnl>0?'+':'')+fmtA(r.pnl)+'만';
+    const resultStr = r.result===null?'—':(r.result>0?'+':'')+r.result.toFixed(1)+'%';
+    const resultColor = r.result===null?'var(--muted2)':r.result>0?'var(--green)':'var(--red)';
+    const labs=['1차','2차','3차','4차','5차'];
+    const cols=['var(--blue)','var(--green)','var(--amber)','var(--purple)','var(--muted2)'];
+    const trancheStr = (r.tranches||[]).filter(t=>t.amount>0).map((t,i)=>`
+      <span style="font-size:11px;color:${cols[i]};font-family:'IBM Plex Mono',monospace;">${labs[i]} ${fmtA(t.amount)}만</span>`).join('<span style="color:var(--muted);margin:0 2px;">·</span>');
+
+    return `<div style="background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:14px 16px;margin-bottom:8px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
+        <div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:15px;color:var(--text);">${r.ticker}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;font-family:'IBM Plex Mono',monospace;">${r.date}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="text-align:right;">
+            <div style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:15px;color:${resultColor};">${resultStr}</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:${pnlColor};">${pnlStr}</div>
+          </div>
+          <button onclick="deletePyRecord(${r.id})" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;padding:2px 6px;">✕</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px;">
+        <div style="background:var(--surface2);border-radius:7px;padding:7px 10px;">
+          <div style="font-size:10px;color:var(--muted);">1차 진입가</div>
+          <div style="font-size:12px;font-weight:600;color:var(--text);font-family:'IBM Plex Mono',monospace;">${r.entry1?r.entry1.toLocaleString()+'원':'—'}</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:7px;padding:7px 10px;">
+          <div style="font-size:10px;color:var(--muted);">손절 / 목표</div>
+          <div style="font-size:12px;font-weight:600;font-family:'IBM Plex Mono',monospace;"><span style="color:var(--red);">-${r.stopPct||'?'}%</span> / <span style="color:var(--green);">+${r.targetPct||'?'}%</span></div>
+        </div>
+        <div style="background:var(--surface2);border-radius:7px;padding:7px 10px;">
+          <div style="font-size:10px;color:var(--muted);">총 투자금</div>
+          <div style="font-size:12px;font-weight:600;color:var(--blue);font-family:'IBM Plex Mono',monospace;">${fmtA(r.totalInvest)}만</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:${r.memo?'8px':'0'};">
+        ${trancheStr}
+      </div>
+      ${r.memo?`<div style="font-size:11px;color:var(--muted2);border-top:0.5px solid var(--border);padding-top:8px;margin-top:4px;">${r.memo}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function exportPyData(){
+  if(!_pyRecords.length){ alert('저장된 기록이 없어요.'); return; }
+  const blob = new Blob([JSON.stringify(_pyRecords,null,2)],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download=`피라미딩_${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importPyData(){ document.getElementById('pyImportFile').click(); }
+
+function handlePyImport(input){
+  const file = input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const data = JSON.parse(e.target.result);
+      if(!Array.isArray(data)) throw new Error();
+      if(_pyRecords.length && !confirm(`현재 ${_pyRecords.length}개 기록이 있어요. 불러온 데이터로 교체할까요?`)) return;
+      _pyRecords = data; savePyRecordsLocal(); renderPyRecords();
+      alert(`✅ ${data.length}개 기록을 불러왔어요.`);
+    }catch{ alert('올바른 피라미딩 기록 파일이 아니에요.'); }
+  };
+  reader.readAsText(file);
+  input.value='';
+}
+
+loadPyRecords();
+renderPyRecords();
+
 /* ─ 매매일지 ─ */
 let journalFilter='all';
-let _journal=[];  // 메모리 저장 (localStorage 대신)
+let _journal=[];
 
 function getJournal(){return _journal;}
-function saveJournal(data){_journal=data;}
+function saveJournal(data){
+  _journal=data;
+  try{localStorage.setItem('trade_journal',JSON.stringify(data));}catch(e){}
+}
+function loadJournal(){
+  try{
+    const saved=localStorage.getItem('trade_journal');
+    if(saved) _journal=JSON.parse(saved);
+  }catch(e){_journal=[];}
+}
 
 function exportData(){
   if(!_journal.length){alert('저장할 기록이 없어요.');return;}
@@ -918,8 +1115,50 @@ function addJournalEntry(){
   const rrate=parseFloat(document.getElementById('j_rrate').value)||null;
   const memo=document.getElementById('j_memo').value.trim();
   const type=document.getElementById('j_type').value;
-  const entry={id:Date.now(),date,ticker,type,invest,stoploss,target,result:isNaN(result)?null:result,pnl,rrate,memo};
-  const j=getJournal();j.unshift(entry);saveJournal(j);renderJournal();clearJournalForm();
+
+  const editId=document.getElementById('j_edit_id').value;
+  if(editId){
+    // 수정 모드
+    const j=getJournal().map(e=>e.id===parseInt(editId)?{...e,date,ticker,type,invest,stoploss,target,result:isNaN(result)?null:result,pnl,rrate,memo}:e);
+    saveJournal(j);
+    document.getElementById('j_edit_id').value='';
+    document.getElementById('j_form_title').textContent='+ 매매 기록 추가';
+    document.querySelector('[onclick="addJournalEntry()"]').textContent='저장';
+    document.getElementById('j_cancel_edit').style.display='none';
+  } else {
+    const entry={id:Date.now(),date,ticker,type,invest,stoploss,target,result:isNaN(result)?null:result,pnl,rrate,memo};
+    const j=getJournal();j.unshift(entry);saveJournal(j);
+  }
+  renderJournal();clearJournalForm();
+}
+
+function editJournalEntry(id){
+  const entry=getJournal().find(e=>e.id===id);
+  if(!entry)return;
+  document.getElementById('j_date').value=entry.date||'';
+  document.getElementById('j_ticker').value=entry.ticker||'';
+  document.getElementById('j_type').value=entry.type||'swing';
+  document.getElementById('j_invest').value=entry.invest||'';
+  document.getElementById('j_stoploss').value=entry.stoploss||'';
+  document.getElementById('j_target').value=entry.target||'';
+  document.getElementById('j_result').value=entry.result!==null?entry.result:'';
+  document.getElementById('j_pnl').value=entry.pnl!==null?entry.pnl:'';
+  document.getElementById('j_rrate').value=entry.rrate||'';
+  document.getElementById('j_memo').value=entry.memo||'';
+  document.getElementById('j_edit_id').value=id;
+  document.getElementById('j_form_title').textContent='✏️ 기록 수정 중';
+  document.querySelector('[onclick="addJournalEntry()"]').textContent='수정 완료';
+  document.getElementById('j_cancel_edit').style.display='inline-block';
+  // 폼으로 스크롤
+  document.querySelector('.add-form').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function cancelEdit(){
+  clearJournalForm();
+  document.getElementById('j_edit_id').value='';
+  document.getElementById('j_form_title').textContent='+ 매매 기록 추가';
+  document.querySelector('[onclick="addJournalEntry()"]').textContent='저장';
+  document.getElementById('j_cancel_edit').style.display='none';
 }
 function clearJournalForm(){
   ['j_ticker','j_invest','j_stoploss','j_target','j_result','j_pnl','j_rrate','j_memo'].forEach(id=>{document.getElementById(id).value='';});
@@ -967,10 +1206,14 @@ function renderJournal(){
       <td style="font-family:'IBM Plex Mono',monospace;font-size:12px;${rc}">${rs}</td>
       <td style="font-family:'IBM Plex Mono',monospace;font-weight:600;${pc}">${ps}</td>
       <td style="font-size:11px;color:var(--muted);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e.memo||''}">${e.memo||'—'}</td>
-      <td><button class="jt-del" onclick="deleteJournalEntry(${e.id})">✕</button></td>
+      <td style="white-space:nowrap;">
+        <button class="jt-del" onclick="editJournalEntry(${e.id})" style="color:var(--blue);margin-right:2px;">✏️</button>
+        <button class="jt-del" onclick="deleteJournalEntry(${e.id})">✕</button>
+      </td>
     </tr>`;
   }).join('');
 }
+loadJournal();
 renderJournal();
 
 
